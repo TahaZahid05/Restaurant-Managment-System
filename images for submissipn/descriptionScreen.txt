@@ -1,0 +1,19 @@
+1) staffManagment.ui: Provides the manager the about all of the staff information (Name, staff id etc). He can update, add new staff, and delete existing staff. 'View Working Shift' opens another screen - 'workingShift.ui'- that lets the manager see which shift a particular person is working.
+
+2) workingShift.ui: It provides the manager all of the shifts of the person. It is possible that instead of the shift, 'On Leave' or 'Medical Leave' is written incase the staff is not available.
+
+3) CustomerFeedBackForm.ui - This form lets the user submit a feedback to us in order to rate their experience. Still have some confusion as to whether this would also be available to online users or not. 
+
+4) CustomerFeedBackView.ui - This is for the manager to access customers reviews to check if the customers are satisfied or not.
+
+5) InventoryManagment.ui - Tells the manager what items are in inventory and their stock. It also tells when the stock was last checked and who in the staff checked it. It can be updated and an item can also be deleted.
+
+6) UpdateInventory.ui - Accessed by clicking update on the 5th screen. It allows the manager to update the stock on inventory.
+
+7) generateBillStart.ui - It allows the concerned staff to generate bill for a specific order id by clicking a button.
+
+8) BilPrintandOrderComplete.ui - It shows the staff the details of the order. It gives a print button which would print the receipt. There is also a payment received button which when clicked would mark the order complete so other database table can be adjusted accordingly.
+
+9) TransactionView.ui - It shows the manager all the transactions. Those can be updated/deleted and new transactions can also be added. There is also a profit loss statement group below that allows the manager to see profit/loss for a specific time by clicking a button.
+
+10) ProfitLossScreen.ui - It provides the user with all the info regarding the expenses. Gives the user option to print or close

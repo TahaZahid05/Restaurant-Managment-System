@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>501</width>
-    <height>289</height>
+    <height>265</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,12 +18,15 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
-      <width>461</width>
-      <height>181</height>
+      <y>10</y>
+      <width>471</width>
+      <height>151</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
+     <property name="verticalSpacing">
+      <number>14</number>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
@@ -64,23 +67,13 @@
      <item row="3" column="1">
       <widget class="QLineEdit" name="lineEdit_3"/>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Staff ID</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="lineEdit_4"/>
-     </item>
     </layout>
    </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>362</x>
-      <y>210</y>
+      <x>370</x>
+      <y>180</y>
       <width>111</width>
       <height>28</height>
      </rect>

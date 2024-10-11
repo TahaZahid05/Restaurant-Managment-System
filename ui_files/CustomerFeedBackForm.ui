@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>815</width>
-    <height>817</height>
+    <width>686</width>
+    <height>691</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>781</width>
+      <width>651</width>
       <height>20</height>
      </rect>
     </property>
@@ -46,7 +46,7 @@
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>781</width>
+      <width>661</width>
       <height>20</height>
      </rect>
     </property>
@@ -73,8 +73,8 @@
      <rect>
       <x>10</x>
       <y>90</y>
-      <width>781</width>
-      <height>615</height>
+      <width>661</width>
+      <height>501</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,4,4">
@@ -582,8 +582,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>650</x>
-      <y>720</y>
+      <x>530</x>
+      <y>600</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -598,7 +598,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>815</width>
+     <width>686</width>
      <height>26</height>
     </rect>
    </property>
@@ -608,9 +608,9 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="buttonGroup_4"/>
+  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup_3"/>
-  <buttongroup name="buttonGroup_4"/>
  </buttongroups>
 </ui>

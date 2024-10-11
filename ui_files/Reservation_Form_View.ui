@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1041</width>
-    <height>314</height>
+    <width>760</width>
+    <height>306</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Customers Feedback View</string>
+   <string>View Reservations</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
-      <width>1011</width>
+      <y>10</y>
+      <width>731</width>
       <height>192</height>
      </rect>
     </property>
@@ -39,47 +39,47 @@
      <bool>false</bool>
     </attribute>
     <attribute name="horizontalHeaderDefaultSectionSize">
-     <number>200</number>
+     <number>120</number>
     </attribute>
     <attribute name="horizontalHeaderHighlightSections">
      <bool>true</bool>
     </attribute>
     <column>
      <property name="text">
-      <string>OrderID</string>
+      <string>ReservationID</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>StaffID</string>
+      <string>CustomerID</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Freshness</string>
+      <string>CustomerName</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Menu Diversity</string>
+      <string>Date</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Response Time of The Staff</string>
+      <string>Time</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Politeness of the Staff</string>
+      <string>Party Size</string>
      </property>
     </column>
    </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>230</y>
+      <x>580</x>
+      <y>220</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -94,7 +94,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1041</width>
+     <width>760</width>
      <height>26</height>
     </rect>
    </property>

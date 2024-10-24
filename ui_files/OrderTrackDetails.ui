@@ -232,7 +232,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
       <x>540</x>

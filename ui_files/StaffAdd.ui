@@ -11,10 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Add or Update Staff</string>
+   <string>Add Staff</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="addStaffButton">
     <property name="geometry">
      <rect>
       <x>510</x>
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Submit</string>
+     <string>Add</string>
     </property>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget">
@@ -111,6 +111,19 @@
       <widget class="QLineEdit" name="lineEdit"/>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>220</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

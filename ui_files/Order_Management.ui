@@ -99,7 +99,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="placeOrderButton">
     <property name="geometry">
      <rect>
       <x>480</x>
@@ -151,7 +151,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="viewStatusButton">
     <property name="geometry">
      <rect>
       <x>480</x>
@@ -164,17 +164,30 @@
      <string>View Status</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="cancelOrderButton">
     <property name="geometry">
      <rect>
-      <x>480</x>
-      <y>510</y>
+      <x>380</x>
+      <y>480</y>
       <width>93</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
      <string>Cancel Order</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>520</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
     </property>
    </widget>
   </widget>

@@ -86,7 +86,7 @@
      <string>Register</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="guestLoginButton">
     <property name="geometry">
      <rect>
       <x>190</x>
@@ -97,6 +97,19 @@
     </property>
     <property name="text">
      <string>Guest Login</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="exitButton">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>130</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Exit</string>
     </property>
    </widget>
   </widget>

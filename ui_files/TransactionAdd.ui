@@ -6,21 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>716</width>
-    <height>373</height>
+    <width>709</width>
+    <height>394</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Profit Loss Statement</string>
+   <string>Add Transaction</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="formLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>10</y>
       <width>671</width>
-      <height>258</height>
+      <height>285</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -34,7 +34,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Total Revenue:</string>
+        <string>Date and Time</string>
        </property>
       </widget>
      </item>
@@ -58,7 +58,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Gross Profit:</string>
+        <string>Transaction Type</string>
        </property>
       </widget>
      </item>
@@ -72,7 +72,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Advertising/Marketing Fees:</string>
+        <string>Related Party</string>
        </property>
       </widget>
      </item>
@@ -86,7 +86,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Utility Fees:</string>
+        <string>Amount</string>
        </property>
       </widget>
      </item>
@@ -100,7 +100,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Repairs/Maintenance: </string>
+        <string>Payment Method</string>
        </property>
       </widget>
      </item>
@@ -124,7 +124,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Wages/Salaries/Benefits/Shipments Cost:</string>
+        <string>Reference ID</string>
        </property>
       </widget>
      </item>
@@ -138,7 +138,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Other Expenses: </string>
+        <string>Category</string>
        </property>
       </widget>
      </item>
@@ -167,7 +167,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Total Expenses</string>
+        <string>Tax Amount</string>
        </property>
       </widget>
      </item>
@@ -184,33 +184,43 @@
         </font>
        </property>
        <property name="text">
-        <string>Net Profit</string>
+        <string>Total Amount</string>
        </property>
       </widget>
      </item>
      <item row="8" column="1">
       <widget class="QLineEdit" name="lineEdit_9"/>
      </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>Handled By</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="lineEdit_10"/>
+     </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="printButton">
+   <widget class="QPushButton" name="addTransactionButton">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>280</y>
-      <width>93</width>
+      <x>552</x>
+      <y>310</y>
+      <width>131</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>Print</string>
+     <string>Add Transaction</string>
     </property>
    </widget>
    <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>280</y>
+      <x>450</x>
+      <y>310</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -225,7 +235,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>716</width>
+     <width>709</width>
      <height>26</height>
     </rect>
    </property>

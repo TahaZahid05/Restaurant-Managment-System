@@ -116,7 +116,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="printButton">
     <property name="geometry">
      <rect>
       <x>402</x>
@@ -129,7 +129,7 @@
      <string>Print</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="paymentButton">
     <property name="geometry">
      <rect>
       <x>262</x>
@@ -140,6 +140,19 @@
     </property>
     <property name="text">
      <string>Payment Received</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>470</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
     </property>
    </widget>
   </widget>

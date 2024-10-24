@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>454</width>
-    <height>758</height>
+    <height>710</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,17 +41,17 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>620</y>
+      <y>300</y>
       <width>291</width>
       <height>22</height>
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="registerButton">
+   <widget class="QPushButton" name="applyButton">
     <property name="geometry">
      <rect>
       <x>330</x>
-      <y>670</y>
+      <y>350</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -59,39 +59,6 @@
     <property name="text">
      <string>Apply Changes</string>
     </property>
-   </widget>
-   <widget class="QLabel" name="label_7">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>310</y>
-      <width>81</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Register as</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="roleSelect">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>310</y>
-      <width>291</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string>Customer</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Staff</string>
-     </property>
-    </item>
    </widget>
    <widget class="QLineEdit" name="userPass">
     <property name="geometry">
@@ -103,11 +70,11 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="returnLoginButton">
+   <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
       <x>222</x>
-      <y>670</y>
+      <y>350</y>
       <width>101</width>
       <height>28</height>
      </rect>
@@ -153,7 +120,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>620</y>
+      <y>300</y>
       <width>91</width>
       <height>16</height>
      </rect>
@@ -173,19 +140,6 @@
     </property>
     <property name="text">
      <string>First name</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_8">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>350</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Addresses</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -247,11 +201,24 @@
      </rect>
     </property>
    </widget>
+   <widget class="QPushButton" name="newAddressButton">
+    <property name="geometry">
+     <rect>
+      <x>282</x>
+      <y>610</y>
+      <width>151</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add New Address</string>
+    </property>
+   </widget>
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>380</y>
+      <x>20</x>
+      <y>410</y>
       <width>411</width>
       <height>192</height>
      </rect>
@@ -267,17 +234,17 @@
      </property>
     </column>
    </widget>
-   <widget class="QPushButton" name="registerButton_2">
+   <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>272</x>
-      <y>580</y>
-      <width>151</width>
-      <height>28</height>
+      <x>20</x>
+      <y>380</y>
+      <width>71</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Add New Address</string>
+     <string>Addresses</string>
     </property>
    </widget>
   </widget>

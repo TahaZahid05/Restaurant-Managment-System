@@ -106,7 +106,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="reserveButton">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -148,7 +148,7 @@
      <string>Reservation Id</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="viewStatusButton">
     <property name="geometry">
      <rect>
       <x>480</x>
@@ -182,6 +182,32 @@
       <width>421</width>
       <height>22</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cancelReservationButton">
+    <property name="geometry">
+     <rect>
+      <x>342</x>
+      <y>330</y>
+      <width>131</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Cancel Reservation</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>330</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
     </property>
    </widget>
   </widget>

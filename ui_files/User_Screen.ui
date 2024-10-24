@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>363</width>
-    <height>388</height>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>70</y>
+      <y>100</y>
       <width>321</width>
       <height>241</height>
      </rect>
@@ -59,7 +59,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="editProfileButton">
        <property name="text">
         <string>Edit Profile</string>
        </property>
@@ -71,7 +71,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>50</y>
       <width>341</width>
       <height>20</height>
      </rect>
@@ -81,6 +81,19 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
     </property>
    </widget>
   </widget>

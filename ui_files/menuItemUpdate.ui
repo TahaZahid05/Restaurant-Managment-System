@@ -6,33 +6,40 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>544</width>
-    <height>291</height>
+    <width>596</width>
+    <height>346</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Reservation Status</string>
+   <string>Update Menu Item</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>20</y>
-      <width>55</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Date</string>
-    </property>
-   </widget>
-   <widget class="QDateEdit" name="dateEdit">
+   <widget class="QComboBox" name="comboBox">
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>20</y>
-      <width>161</width>
+      <y>60</y>
+      <width>451</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEdit">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>160</y>
+      <width>451</width>
+      <height>87</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_2">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>110</y>
+      <width>451</width>
       <height>22</height>
      </rect>
     </property>
@@ -40,77 +47,83 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>20</y>
+      <x>10</x>
+      <y>60</y>
       <width>55</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Time</string>
+     <string>Category</string>
     </property>
    </widget>
-   <widget class="QTimeEdit" name="timeEdit">
+   <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>20</y>
-      <width>151</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>90</y>
-      <width>101</width>
+      <x>10</x>
+      <y>160</y>
+      <width>71</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Customer Name</string>
+     <string>Description</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>90</y>
-      <width>361</width>
+      <y>10</y>
+      <width>451</width>
       <height>22</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label_4">
+   <widget class="QPushButton" name="updateItemButton">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>150</y>
+      <x>490</x>
+      <y>260</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Update Item</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>55</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Price</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
       <width>71</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Party Size</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>150</y>
-      <width>361</width>
-      <height>22</height>
-     </rect>
+     <string>Item Name</string>
     </property>
    </widget>
    <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
       <x>390</x>
-      <y>200</y>
+      <y>260</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -125,7 +138,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>544</width>
+     <width>596</width>
      <height>26</height>
     </rect>
    </property>

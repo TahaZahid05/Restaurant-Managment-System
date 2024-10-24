@@ -579,7 +579,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="submitButton">
     <property name="geometry">
      <rect>
       <x>530</x>
@@ -590,6 +590,19 @@
     </property>
     <property name="text">
      <string>Submit</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>600</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
     </property>
    </widget>
   </widget>
@@ -608,9 +621,9 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_4"/>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup_4"/>
  </buttongroups>
 </ui>

@@ -49,10 +49,10 @@
      </property>
     </column>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="updateButton">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>410</x>
       <y>220</y>
       <width>131</width>
       <height>28</height>
@@ -62,10 +62,10 @@
      <string>Update</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="deleteButton">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>290</x>
       <y>220</y>
       <width>111</width>
       <height>28</height>
@@ -75,17 +75,30 @@
      <string>Delete</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
-      <x>300</x>
+      <x>190</x>
       <y>220</y>
       <width>93</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>Close</string>
+     <string>Back</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addButton">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>220</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add</string>
     </property>
    </widget>
   </widget>

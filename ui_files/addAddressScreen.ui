@@ -6,62 +6,66 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>535</width>
-    <height>311</height>
+    <width>576</width>
+    <height>257</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Order Tracking</string>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableWidget" name="tableWidget">
+   <widget class="QWidget" name="formLayoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>511</width>
-      <height>192</height>
+      <width>531</width>
+      <height>142</height>
      </rect>
     </property>
-    <column>
-     <property name="text">
-      <string>Order ID</string>
+    <layout class="QFormLayout" name="formLayout">
+     <property name="leftMargin">
+      <number>10</number>
      </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Order On</string>
+     <property name="topMargin">
+      <number>10</number>
      </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Status</string>
+     <property name="rightMargin">
+      <number>10</number>
      </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Total</string>
+     <property name="bottomMargin">
+      <number>10</number>
      </property>
-    </column>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Address: </string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QTextEdit" name="textEdit"/>
+     </item>
+    </layout>
    </widget>
-   <widget class="QPushButton" name="viewDetailsButton">
+   <widget class="QPushButton" name="submitButton">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>220</y>
+      <x>450</x>
+      <y>160</y>
       <width>93</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>View Details</string>
+     <string>Submit</string>
     </property>
    </widget>
    <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>220</y>
+      <x>340</x>
+      <y>160</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -76,7 +80,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>535</width>
+     <width>576</width>
      <height>26</height>
     </rect>
    </property>

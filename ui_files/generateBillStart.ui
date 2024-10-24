@@ -44,7 +44,7 @@
      </property>
     </column>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="generateButton">
     <property name="geometry">
      <rect>
       <x>360</x>
@@ -55,6 +55,19 @@
     </property>
     <property name="text">
      <string>Generate Bill</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>230</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
     </property>
    </widget>
   </widget>

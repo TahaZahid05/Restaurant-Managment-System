@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>362</width>
-    <height>423</height>
+    <width>431</width>
+    <height>466</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
-      <width>341</width>
+      <y>50</y>
+      <width>411</width>
       <height>20</height>
      </rect>
     </property>
@@ -34,8 +34,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>50</y>
-      <width>321</width>
+      <y>90</y>
+      <width>401</width>
       <height>298</height>
      </rect>
     </property>
@@ -47,56 +47,56 @@
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
      <item>
-      <widget class="QPushButton" name="onlineOrderButton">
+      <widget class="QPushButton" name="billGenButton">
        <property name="text">
         <string>Bill Generation</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="trackOrderButton">
+      <widget class="QPushButton" name="feedbackButton">
        <property name="text">
         <string>View Customer Feedback</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="inventoryButton">
        <property name="text">
         <string>Inventory Management</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="menuButton">
        <property name="text">
         <string>Menu Management</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="orderButton">
        <property name="text">
         <string>Order Management</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="transactionButton">
        <property name="text">
         <string>Transaction View</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_5">
+      <widget class="QPushButton" name="reservationButton">
        <property name="text">
         <string>Reservation View</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_6">
+      <widget class="QPushButton" name="staffButton">
        <property name="text">
         <string>Staff Management</string>
        </property>
@@ -104,13 +104,26 @@
      </item>
     </layout>
    </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>362</width>
+     <width>431</width>
      <height>26</height>
     </rect>
    </property>

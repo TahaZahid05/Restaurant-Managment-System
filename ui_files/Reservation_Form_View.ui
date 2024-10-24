@@ -75,7 +75,7 @@
      </property>
     </column>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
       <x>580</x>
@@ -85,7 +85,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Close</string>
+     <string>Back</string>
     </property>
    </widget>
   </widget>

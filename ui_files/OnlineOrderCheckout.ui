@@ -292,7 +292,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="orderButton">
     <property name="geometry">
      <rect>
       <x>530</x>

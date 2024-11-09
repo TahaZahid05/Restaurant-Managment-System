@@ -2,6 +2,29 @@ import sys
 from PyQt6 import QtWidgets
 from PyQt6 import uic
 from validate_email import validate_email
+# Importing essential modules
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtCore import QDate
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QHeaderView
+import sys
+import pyodbc
+
+server = 'TAHA\\SQLSERVER1'
+database = 'Project'  # Name of your Northwind database
+use_windows_authentication = True  # Set to True to use Windows Authentication
+username = 'sa'  # Specify a username if not using Windows Authentication
+password = 'Fall2022.dbms'  # Specify a password if not using Windows Authentication
+
+if use_windows_authentication:
+    connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+else:
+    connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}'
+
+# Establish a connection to the database
+connection = pyodbc.connect(connection_string)
+
+# Create a cursor to interact with the database
+cursor = connection.cursor()
 
 #1st index contains sample data to help get an idea of what data would be in the list
 #0 = First Name
@@ -11,9 +34,11 @@ from validate_email import validate_email
 #4 = Password
 #5 = Address
 #6 = Phone Number
-userInfo = [["Taha","Zahid","tahazahid51@gmail.com","Taha Zahid","toto123",["H4 Yasir Complex"],"0308 2895690"],
-            ["Abdullah","Shaikh","abdullahboi1@gmail.com","Abdullah Shaikh","sheikhchilli123",["Cricket"],"0000 0000000"]]
-adminInfo = [["Ayaan","Merchant","ayaannoob1@gmail.com","Ayaan Merchant","ayoyo123",["Table Tennis"],"0000 0000000"]]
+# userInfo = [["Taha","Zahid","tahazahid51@gmail.com","Taha Zahid","toto123",["H4 Yasir Complex"],"0308 2895690"],
+#             ["Abdullah","Shaikh","abdullahboi1@gmail.com","Abdullah Shaikh","sheikhchilli123",["Cricket"],"0000 0000000"]]
+# adminInfo = [["Ayaan","Merchant","ayaannoob1@gmail.com","Ayaan Merchant","ayoyo123",["Table Tennis"],"0000 0000000"]]
+
+idCompare = 0
 
 class UI(QtWidgets.QMainWindow):
     def __init__(self):
@@ -34,17 +59,21 @@ class UI(QtWidgets.QMainWindow):
         self.register_user.show()
 
     def login(self):
+        checking_query_customer = "Select Email, password, id from Customer"
+        checking_query_staff = "Select Email, Password from Staff"
         if(self.emailAddress.text() == "" or self.userPass.text() == ""):
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to login!",QtWidgets.QMessageBox.StandardButton.Ok)
         else:
-            for i in range(len(userInfo)):
-                if (self.emailAddress.text() == userInfo[i][2] and self.userPass.text() == userInfo[i][4]):
+            cursor.execute(checking_query_customer)
+            for row in cursor.fetchall():
+                if (self.emailAddress.text() == row[0] and self.userPass.text() == row[1]):
+                    idCompare = row[2]
                     self.user_screen = userOptions()
                     self.user_screen.show()
                     return
-                    
-            for l in range(len(adminInfo)):
-                if (self.emailAddress.text() == adminInfo[l][2] and self.userPass.text() == adminInfo[l][4]):
+            cursor.execute(checking_query_staff)
+            for row in cursor.fetchall():
+                if (self.emailAddress.text() == row[0] and self.userPass.text() == row[1]):
                     self.admin_screen = adminScreen()
                     self.admin_screen.show()
                     return
@@ -73,34 +102,65 @@ class registerUser(QtWidgets.QMainWindow):
         # self.cancelButton.clicked.connect(self.closeApp)
     
     def registering(self):
-        for i in range(len(userInfo)):
-            for j in range(6):
+        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == ""):
+            dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to register!",QtWidgets.QMessageBox.StandardButton.Ok)
+        elif (not(validate_email(self.emailAddress.text()))):
+            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Email Address","Email address is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
+        elif (self.userPass.text() != self.passConfirm.text()):
+            dlg = QtWidgets.QMessageBox.warning(self,"Password Confirmation Failure","Confirm Password doesn't have the same password!",QtWidgets.QMessageBox.StandardButton.Ok)
+        else:
+            checking_query_customer = "Select Email, username from Customer"
+            checking_query_staff = "Select Email, username from Staff"
+            cursor.execute(checking_query_customer)
+            checkFlag = True
+            for row in cursor.fetchall():
                 #Add QValidation
-                if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == ""):
-                    dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to register!",QtWidgets.QMessageBox.StandardButton.Ok)
-                    break
-                elif (userInfo[i][2] == self.emailAddress.text()):
+                if (row[0] == self.emailAddress.text()):
                     dlg = QtWidgets.QMessageBox.warning(self,"Email Address Already Exists","This email is already used to make an account!",QtWidgets.QMessageBox.StandardButton.Ok)
+                    checkFlag = False
                     break
-                elif (userInfo[i][3] == self.userName.text()):
+                elif (row[1] == self.userName.text()):
                     dlg = QtWidgets.QMessageBox.warning(self,"User Already Exists","The username is already used to make an account!",QtWidgets.QMessageBox.StandardButton.Ok)
+                    checkFlag = False
                     break
-                elif (not(validate_email(self.emailAddress.text()))):
-                    dlg = QtWidgets.QMessageBox.warning(self,"Invalid Email Address","Email address is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
+            cursor.execute(checking_query_staff)
+            for row in cursor.fetchall():
+                #Add QValidation
+                if (row[0] == self.emailAddress.text()):
+                    dlg = QtWidgets.QMessageBox.warning(self,"Email Address Already Exists","This email is already used to make an account!",QtWidgets.QMessageBox.StandardButton.Ok)
+                    checkFlag = False
                     break
-                elif (self.userPass.text() != self.passConfirm.text()):
-                    dlg = QtWidgets.QMessageBox.warning(self,"Password Confirmation Failure","Confirm Password doesn't have the same password!",QtWidgets.QMessageBox.StandardButton.Ok)
+                elif (row[1] == self.userName.text()):
+                    dlg = QtWidgets.QMessageBox.warning(self,"User Already Exists","The username is already used to make an account!",QtWidgets.QMessageBox.StandardButton.Ok)
+                    checkFlag = False
                     break
+            if (checkFlag):
+                insert_query = """
+                                """
+                if(self.roleSelect.currentText() == "Staff"):
+                    insert_query = """
+                        INSERT INTO Staff
+                        ([First_Name],[Last_Name],[Email],[username],[Password])
+                        VALUES (?,?,?,?,?)
+                    """
                 else:
-                    userInfo.append([self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.roleSelect.currentIndex()])
-                    dlg = QtWidgets.QMessageBox.information(self,"Account created","Account was successfully created!",QtWidgets.QMessageBox.StandardButton.Ok)
-                    self.firstName.clear()
-                    self.lastName.clear()
-                    self.emailAddress.clear()
-                    self.userName.clear()
-                    self.userPass.clear()
-                    self.passConfirm.clear()
-                    break
+                    insert_query = """
+                        INSERT INTO Customer
+                        ([First_Name],[Last_Name],[Email],[username],[Password])
+                        VALUES (?,?,?,?,?)
+                    """
+                data = (
+                    self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text()
+                )
+                cursor.execute(insert_query,data)
+                connection.commit()
+                dlg = QtWidgets.QMessageBox.information(self,"Account created","Account was successfully created!",QtWidgets.QMessageBox.StandardButton.Ok)
+                self.firstName.clear()
+                self.lastName.clear()
+                self.emailAddress.clear()
+                self.userName.clear()
+                self.userPass.clear()
+                self.passConfirm.clear()
 
 
     def closeScreen(self):
@@ -154,9 +214,21 @@ class editProfileScreen(QtWidgets.QMainWindow):
 
         uic.loadUi('ui_files/EditProfile.ui', self)
 
+        self.load_user_details()
+
         self.newAddressButton.clicked.connect(self.newAddress)
         self.applyButton.clicked.connect(self.applyChanges)
         self.backButton.clicked.connect(self.back)
+
+    def load_user_details(self):
+        idCompare = 21 #Fix. can't hardcode
+        load_query = "Select First_name, Last_name, Email, username from Customer where id = ?"
+        cursor.execute(load_query,(idCompare))
+        for row in cursor.fetchall():
+            self.firstName.setText(row[0])
+            self.lastName.setText(row[1])
+            self.emailAddress.setText(row[2])
+            self.userName.setText(row[3])
 
     def newAddress(self):
         self.newAddress_screen = newAddressScreen()
@@ -208,8 +280,40 @@ class onlineOrder(QtWidgets.QMainWindow):
 
         uic.loadUi('ui_files/Order_ItemSelect.ui', self)
 
+        self.populate_menu_table()
+        # self.populate_category_box()
+
         self.checkOutButton.clicked.connect(self.checkOutScreen)
         self.backButton.clicked.connect(self.back)
+        self.searchButton.clicked.connect(self.filter_menu_table)
+        # self.addCartButton.clicked.connect(self.add_to_cart_table)
+
+    def populate_menu_table(self):
+        populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem"
+        cursor.execute(populate_menu_query)
+        for row_index, row_data in enumerate(cursor.fetchall()):
+            self.menuTable.insertRow(row_index)
+            for col_index, cell_data in enumerate(row_data):
+                item = QTableWidgetItem(str(cell_data))
+                self.menuTable.setItem(row_index, col_index, item)
+
+    # def self_populate_category_box(self):
+    #     populate_category_query = "Select distinct Category from MenuItem"
+
+
+    def filter_menu_table(self):
+        populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem where Name = ? OR Category = ?"
+        cursor.execute(populate_menu_query,(self.itemNameLine.text(),self.categoryBox.currentText()))
+        self.menuTable.clear()
+        for row_index, row_data in enumerate(cursor.fetchall()):
+            self.menuTable.insertRow(row_index)
+            for col_index, cell_data in enumerate(row_data):
+                item = QTableWidgetItem(str(cell_data))
+                self.menuTable.setItem(row_index, col_index, item)
+
+    # def add_to_cart_table(self):
+
+
 
     def back(self):
         self.close()
@@ -225,9 +329,13 @@ class checkOutScreen(QtWidgets.QMainWindow):
         uic.loadUi('ui_files/OnlineOrderCheckout.ui', self)
 
         self.backButton.clicked.connect(self.back)
+        # self.orderButton.clicked.connect(self.orderConfirmed)
 
     def back(self):
         self.close()
+
+    # def orderConfirmed(self):
+
 
 class seatReserve(QtWidgets.QMainWindow):
     def __init__(self):

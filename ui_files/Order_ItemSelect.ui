@@ -26,7 +26,7 @@
     <property name="title">
      <string>Menu</string>
     </property>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="addCartButton">
      <property name="geometry">
       <rect>
        <x>522</x>
@@ -39,7 +39,7 @@
       <string>Add To Cart</string>
      </property>
     </widget>
-    <widget class="QTableWidget" name="tableWidget">
+    <widget class="QTableWidget" name="menuTable">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -47,6 +47,12 @@
        <width>609</width>
        <height>181</height>
       </rect>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
      </property>
      <attribute name="horizontalHeaderCascadingSectionResizes">
       <bool>false</bool>
@@ -106,7 +112,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="itemNameLine"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_3">
@@ -116,7 +122,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QComboBox" name="comboBox"/>
+       <widget class="QComboBox" name="categoryBox"/>
       </item>
       <item row="1" column="0" colspan="2">
        <widget class="QLabel" name="label_2">
@@ -136,7 +142,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="searchButton">
      <property name="geometry">
       <rect>
        <x>530</x>

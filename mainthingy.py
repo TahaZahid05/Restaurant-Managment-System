@@ -302,8 +302,10 @@ class onlineOrder(QtWidgets.QMainWindow):
 
 
     def filter_menu_table(self):
-        populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem where Name = ? OR Category = ?"
-        cursor.execute(populate_menu_query,(self.itemNameLine.text(),self.categoryBox.currentText()))
+        populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem where Name like ?"
+
+        cursor.execute(populate_menu_query,(f"%{self.itemNameLine.text()}%"))
+
         self.menuTable.clear()
         for row_index, row_data in enumerate(cursor.fetchall()):
             self.menuTable.insertRow(row_index)

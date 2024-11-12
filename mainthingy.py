@@ -281,7 +281,7 @@ class onlineOrder(QtWidgets.QMainWindow):
         uic.loadUi('ui_files/Order_ItemSelect.ui', self)
 
         self.populate_menu_table()
-        # self.populate_category_box()
+        self.populate_category_box()
 
         self.checkOutButton.clicked.connect(self.checkOutScreen)
         self.backButton.clicked.connect(self.back)
@@ -297,23 +297,26 @@ class onlineOrder(QtWidgets.QMainWindow):
                 item = QTableWidgetItem(str(cell_data))
                 self.menuTable.setItem(row_index, col_index, item)
 
-    # def self_populate_category_box(self):
-    #     populate_category_query = "Select distinct Category from MenuItem"
+    def populate_category_box(self):
+        populate_category_query = "Select distinct Category from MenuItem"
+        cursor.execute(populate_category_query)
+        for row in cursor.fetchall():
+            print(row[0])
+            self.categoryBox.addItem(row[0])
+                
 
 
     def filter_menu_table(self):
-        populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem where Name like ?"
-
-        cursor.execute(populate_menu_query,(f"%{self.itemNameLine.text()}%"))
-
+        populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem where Name like ? AND Category LIKE ?"
+        print(self.categoryBox.currentText())
+        cursor.execute(populate_menu_query,(f"%{self.itemNameLine.text()}%"),f"%{self.categoryBox.currentText()}%")
+        stringArray = ["Name","Category","People Per Serving","Price"]
         self.menuTable.clear()
         for row_index, row_data in enumerate(cursor.fetchall()):
             self.menuTable.insertRow(row_index)
             for col_index, cell_data in enumerate(row_data):
                 item = QTableWidgetItem(str(cell_data))
-                self.menuTable.setItem(row_index, col_index, item)
-
-    # def add_to_cart_table(self):
+                self.menuTable.setItem(row_index, stringArray[col_index], item)
 
 
 

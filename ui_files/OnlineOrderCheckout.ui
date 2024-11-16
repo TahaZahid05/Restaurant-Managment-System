@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>643</width>
-    <height>826</height>
+    <width>1188</width>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>10</y>
       <width>541</width>
       <height>211</height>
      </rect>
@@ -32,7 +32,7 @@
        <x>20</x>
        <y>30</y>
        <width>501</width>
-       <height>161</height>
+       <height>176</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="0,0">
@@ -61,7 +61,7 @@
        <widget class="QLineEdit" name="emailAddress"/>
       </item>
       <item row="2" column="1">
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="phoneNum"/>
       </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="userName"/>
@@ -74,7 +74,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="lineEdit_2"/>
+       <widget class="QTextEdit" name="addressBox"/>
       </item>
      </layout>
     </widget>
@@ -82,8 +82,8 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>250</y>
+      <x>560</x>
+      <y>10</y>
       <width>611</width>
       <height>311</height>
      </rect>
@@ -222,7 +222,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit_6"/>
+       <widget class="QLineEdit" name="specReq"/>
       </item>
      </layout>
     </widget>
@@ -231,9 +231,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>570</y>
-      <width>611</width>
-      <height>161</height>
+      <y>230</y>
+      <width>531</width>
+      <height>271</height>
      </rect>
     </property>
     <property name="title">
@@ -252,37 +252,24 @@
       <string>Items (Tax Inclusive)</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_12">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>60</y>
-       <width>181</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Placeholder text for items</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_13">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>90</y>
+       <y>200</y>
        <width>111</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Deliver Charges: </string>
+      <string>Delivery Charges: </string>
      </property>
     </widget>
     <widget class="QLabel" name="label_14">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>120</y>
+       <y>240</y>
        <width>101</width>
        <height>16</height>
       </rect>
@@ -291,12 +278,68 @@
       <string>Total Amount: </string>
      </property>
     </widget>
+    <widget class="QTableWidget" name="checkOutItemTable">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>511</width>
+       <height>141</height>
+      </rect>
+     </property>
+     <column>
+      <property name="text">
+       <string>Item Name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Unit Price</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Quantity</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Item Total Price</string>
+      </property>
+     </column>
+    </widget>
+    <widget class="QLabel" name="deliveryCharges">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>200</y>
+       <width>55</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="totalAmount">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>240</y>
+       <width>55</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QPushButton" name="orderButton">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>740</y>
+      <x>450</x>
+      <y>510</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -308,8 +351,8 @@
    <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>740</y>
+      <x>350</x>
+      <y>510</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -324,7 +367,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>643</width>
+     <width>1188</width>
      <height>26</height>
     </rect>
    </property>

@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 from PyQt6 import QtWidgets
 from PyQt6 import uic
 from validate_email import validate_email
@@ -68,7 +69,7 @@ class UI(QtWidgets.QMainWindow):
             for row in cursor.fetchall():
                 if (self.emailAddress.text() == row[0] and self.userPass.text() == row[1]):
                     idCompare = row[2]
-                    self.user_screen = userOptions()
+                    self.user_screen = userOptions(self.emailAddress.text(), self.userPass.text())
                     self.user_screen.show()
                     return
             cursor.execute(checking_query_staff)
@@ -95,14 +96,27 @@ class registerUser(QtWidgets.QMainWindow):
         super(registerUser, self).__init__()
 
         uic.loadUi('ui_files/User_Registration.ui', self)
-
+        self.salaryLine.setEnabled(False)
+        self.roleBox.setEnabled(False)
+        self.roleSelect.currentIndexChanged.connect(self.isStaff)
         self.returnLoginButton.clicked.connect(self.closeScreen)
         self.registerButton.clicked.connect(self.registering)
         #Cancel button has been disabled as it can be misleading/unnecessary
         # self.cancelButton.clicked.connect(self.closeApp)
+
+    def isStaff(self, i):
+        self.roleBox.clear()
+        self.salaryLine.clear()
+        if(i == 0):
+            self.salaryLine.setEnabled(False)
+            self.roleBox.setEnabled(False)
+        else:
+            self.salaryLine.setEnabled(True)
+            self.roleBox.setEnabled(True)
+            self.roleBox.addItems(["Manager","Chef","Waiter","Host","Sous Chef"])
     
     def registering(self):
-        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == ""):
+        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == "" or self.addressBox.toPlainText() == "" or self.phoneLine.text() == "" or (self.salaryLine.text() == "" and self.roleSelect.currentText() == "Staff")):
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to register!",QtWidgets.QMessageBox.StandardButton.Ok)
         elif (not(validate_email(self.emailAddress.text()))):
             dlg = QtWidgets.QMessageBox.warning(self,"Invalid Email Address","Email address is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
@@ -135,32 +149,39 @@ class registerUser(QtWidgets.QMainWindow):
                     checkFlag = False
                     break
             if (checkFlag):
-                insert_query = """
-                                """
                 if(self.roleSelect.currentText() == "Staff"):
                     insert_query = """
                         INSERT INTO Staff
-                        ([First_Name],[Last_Name],[Email],[username],[Password])
-                        VALUES (?,?,?,?,?)
+                        ([First_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary])
+                        VALUES (?,?,?,?,?,?,?,?,?)
                     """
+                    data = (
+                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text(),self.roleBox.currentText(),self.salaryLine.text()
+                    )
+                    cursor.execute(insert_query,data)
                 else:
                     insert_query = """
                         INSERT INTO Customer
-                        ([First_Name],[Last_Name],[Email],[username],[Password])
-                        VALUES (?,?,?,?,?)
+                        ([First_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_number])
+                        VALUES (?,?,?,?,?,?,?)
                     """
-                data = (
-                    self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text()
-                )
-                cursor.execute(insert_query,data)
+                    data = (
+                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text()
+                    )
+                    cursor.execute(insert_query,data)
                 connection.commit()
-                dlg = QtWidgets.QMessageBox.information(self,"Account created","Account was successfully created!",QtWidgets.QMessageBox.StandardButton.Ok)
                 self.firstName.clear()
                 self.lastName.clear()
                 self.emailAddress.clear()
                 self.userName.clear()
                 self.userPass.clear()
                 self.passConfirm.clear()
+                self.addressBox.clear()
+                self.phoneLine.clear()
+                self.salaryLine.clear()
+                # self.roleBox.setCurrentIndex(0)
+                # self.roleSelect.setCurrentIndex(0)
+                dlg = QtWidgets.QMessageBox.information(self,"Account created","Account was successfully created!",QtWidgets.QMessageBox.StandardButton.Ok)
 
 
     def closeScreen(self):
@@ -172,10 +193,13 @@ class registerUser(QtWidgets.QMainWindow):
 
 
 class userOptions(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, email, password):
         super(userOptions, self).__init__()
 
         uic.loadUi('ui_files/User_Screen.ui', self)
+
+        self.email = email
+        self.password = password
 
         self.onlineOrderButton.clicked.connect(self.onlineOrderScreen)
         self.seatReservationButton.clicked.connect(self.seatReserveScreen)
@@ -185,7 +209,7 @@ class userOptions(QtWidgets.QMainWindow):
         self.backButton.clicked.connect(self.back)
     
     def onlineOrderScreen(self):
-        self.online_order_screen = onlineOrder()
+        self.online_order_screen = onlineOrder(self.email,self.password)
         self.online_order_screen.show()
 
     def seatReserveScreen(self):
@@ -275,10 +299,13 @@ class newAddressScreen(QtWidgets.QMainWindow):
 
 
 class onlineOrder(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, email, password):
         super(onlineOrder, self).__init__()
 
         uic.loadUi('ui_files/Order_ItemSelect.ui', self)
+
+        self.email = email
+        self.password = password
 
         self.populate_menu_table()
         self.populate_category_box()
@@ -286,7 +313,7 @@ class onlineOrder(QtWidgets.QMainWindow):
         self.checkOutButton.clicked.connect(self.checkOutScreen)
         self.backButton.clicked.connect(self.back)
         self.searchButton.clicked.connect(self.filter_menu_table)
-        # self.addCartButton.clicked.connect(self.add_to_cart_table)
+        self.addCartButton.clicked.connect(self.add_to_cart_table)
 
     def populate_menu_table(self):
         populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem"
@@ -304,11 +331,8 @@ class onlineOrder(QtWidgets.QMainWindow):
             print(row[0])
             self.categoryBox.addItem(row[0])
                 
-
-
     def filter_menu_table(self):
         populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem where Name like ? AND Category LIKE ?"
-        print(self.categoryBox.currentText())
         cursor.execute(populate_menu_query,(f"%{self.itemNameLine.text()}%"),f"%{self.categoryBox.currentText()}%")
         stringArray = ["Name","Category","People Per Serving","Price"]
         self.menuTable.clear()
@@ -316,30 +340,138 @@ class onlineOrder(QtWidgets.QMainWindow):
             self.menuTable.insertRow(row_index)
             for col_index, cell_data in enumerate(row_data):
                 item = QTableWidgetItem(str(cell_data))
-                self.menuTable.setItem(row_index, stringArray[col_index], item)
+                self.menuTable.setItem(row_index, col_index, item)
+        self.menuTable.setHorizontalHeaderLabels(stringArray)
 
+    def add_to_cart_table(self):
+        selected_row = self.menuTable.currentRow()
+        if selected_row == -1:
+            dlg = QtWidgets.QMessageBox.warning(self,"No Item Selected","Select an item to add to cart!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        item_name = self.menuTable.item(selected_row, 0).text()
+        item_category = self.menuTable.item(selected_row, 1).text()
+        item_price = self.menuTable.item(selected_row, 3).text()
+        for i in range(self.cartTable.rowCount()):
+            if self.cartTable.item(i, 0).text() == item_name and self.cartTable.item(i, 1).text() == item_category and self.cartTable.item(i, 3).text() == item_price:
+                self.cartTable.item(i, 2).setText(str(int(self.cartTable.item(i, 2).text()) + 1))
+                self.cartTable.item(i, 4).setText(str(int(self.cartTable.item(i, 2).text()) * float(item_price)))
+                return
+        self.cartTable.insertRow(self.cartTable.rowCount())
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 0, QTableWidgetItem(str(item_name)))
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 1, QTableWidgetItem(str(item_category)))
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 2, QTableWidgetItem(str("1"))) 
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 3, QTableWidgetItem(str(item_price)))
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 4, QTableWidgetItem(str(item_price)))
+        
 
 
     def back(self):
         self.close()
 
     def checkOutScreen(self):
-        self.checkout_screen = checkOutScreen()
+        self.checkout_screen = checkOutScreen(self.cartTable,self.email,self.password)
         self.checkout_screen.show()
 
 class checkOutScreen(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, cartTable, email, password):
         super(checkOutScreen, self).__init__()
 
         uic.loadUi('ui_files/OnlineOrderCheckout.ui', self)
+        self.cartTable = cartTable
+        self.email = email
+        self.password = password
+        self.totalAmountInt = 0
 
+        self.deliveryCharges.setText("500")
+
+        self.autofill_information()
         self.backButton.clicked.connect(self.back)
-        # self.orderButton.clicked.connect(self.orderConfirmed)
+        self.orderButton.clicked.connect(self.orderConfirmed)
 
     def back(self):
         self.close()
 
-    # def orderConfirmed(self):
+    def autofill_information(self):
+        autofill_query = "Select concat(First_name, ' ', Last_name), Email, Address, Phone_number from Customer where Email = ? and password = ?"
+        cursor.execute(autofill_query,(self.email,self.password))
+        for row in cursor.fetchall():
+            self.userName.setText(row[0])
+            self.emailAddress.setText(row[1])
+            self.addressBox.setPlainText(row[2])
+            self.phoneNum.setText(row[3])
+
+        for row in range(self.cartTable.rowCount()):
+            self.checkOutItemTable.insertRow(row)
+            self.checkOutItemTable.setItem(row, 0, QTableWidgetItem(str(self.cartTable.item(row, 0).text())))
+            self.checkOutItemTable.setItem(row, 1, QTableWidgetItem(str(self.cartTable.item(row, 3).text())))
+            self.checkOutItemTable.setItem(row, 2, QTableWidgetItem(str(self.cartTable.item(row, 2).text())))
+            self.checkOutItemTable.setItem(row, 3, QTableWidgetItem(str(float(self.cartTable.item(row, 4).text()) * int(self.cartTable.item(row, 2).text()))))
+            self.totalAmountInt += float(self.cartTable.item(row, 4).text()) * int(self.cartTable.item(row, 2).text())
+            # for col in range(self.cartTable.columnCount()):
+            #     item = QTableWidgetItem(str(self.cartTable.item(row, col).text()))
+            #     self.checkOutItemTable.setItem(row, col, item)
+
+        self.totalAmount.setText(str(self.totalAmountInt + 500))
+
+
+
+
+    def orderConfirmed(self):
+        autofill_query = "Select id from Customer where Email = ? and password = ?"
+        cursor.execute(autofill_query,(self.email,self.password))
+        customerId = 0
+        for row in cursor.fetchall():
+            customerId = row[0]
+        insert_order_query = """
+            INSERT INTO Orders([CustomerID],[Special_Request],[Date],[Time],[Status]) VALUES (?,?,?,?,?)
+        """
+        date = datetime.today().date()
+        time = datetime.today().time()
+        data = (customerId,self.specReq.text(),date,time,"Pending")
+        print(customerId,self.specReq.text(),date,time)
+        cursor.execute(insert_order_query,data)
+        
+        print("yes")
+        cursor.execute("SELECT SCOPE_IDENTITY()")
+        # print("no")
+        order_id = cursor.fetchone()[0]
+        itemIds = []
+
+        for row in range(self.checkOutItemTable.rowCount()):
+            get_item_id_query = "Select ID from MenuItem where Name = ?"
+            cursor.execute(get_item_id_query,(self.checkOutItemTable.item(row, 0).text()))
+            for row in cursor.fetchall():
+                itemIds.append(row[0])
+
+        insert_order_item_query = """
+            INSERT INTO Order_Menu([Order_ID],[Item_ID)) VALUES (?,?)
+        """
+
+        for row in itemIds:
+            cursor.execute(insert_order_item_query,order_id,(row))
+
+        print("no")
+
+        insert_transaction_query = """
+            INSERT INTO Transaction([Date],[Time],[Type],[Amount]) VALUES (?,?,?,?)
+        """
+
+        data = (date,time,"Order",self.totalAmountInt + 500)
+
+        cursor.execute(insert_transaction_query,data)
+
+        cursor.execute("SELECT SCOPE_IDENTITY()")
+        transaction_id = cursor.fetchone()[0]
+
+        insert_order_details_query = """
+            INSERT INTO Order_Details([Order_ID],[Transaction_ID],[Quantity]) VALUES (?,?,?)
+        """
+
+        for row in range(self.checkOutItemTable.rowCount()):
+            cursor.execute(insert_order_details_query,order_id,transaction_id,self.checkOutItemTable.item(row, 2).text())
+
+        dlg = QtWidgets.QMessageBox.information(self,"Order Confirmed","Order was successfully placed!",QtWidgets.QMessageBox.StandardButton.Ok)
+        self.close()
 
 
 class seatReserve(QtWidgets.QMainWindow):

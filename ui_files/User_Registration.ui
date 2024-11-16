@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>583</height>
+    <height>672</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -189,7 +189,7 @@
     <property name="geometry">
      <rect>
       <x>350</x>
-      <y>500</y>
+      <y>580</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -202,7 +202,7 @@
     <property name="geometry">
      <rect>
       <x>242</x>
-      <y>500</y>
+      <y>580</y>
       <width>101</width>
       <height>28</height>
      </rect>
@@ -215,7 +215,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>360</y>
+      <y>440</y>
       <width>55</width>
       <height>16</height>
      </rect>
@@ -224,11 +224,11 @@
      <string>Address</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="textEdit">
+   <widget class="QTextEdit" name="addressBox">
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>360</y>
+      <y>440</y>
       <width>291</width>
       <height>71</height>
      </rect>
@@ -238,7 +238,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>450</y>
+      <y>530</y>
       <width>91</width>
       <height>16</height>
      </rect>
@@ -247,14 +247,60 @@
      <string>Phone Number</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="phoneLine">
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>450</y>
+      <y>530</y>
       <width>291</width>
       <height>22</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="roleBox">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>360</y>
+      <width>291</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="roleLabel">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>360</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Role</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="salaryLine">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>400</y>
+      <width>291</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="salaryLabel">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>400</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Salary</string>
     </property>
    </widget>
   </widget>

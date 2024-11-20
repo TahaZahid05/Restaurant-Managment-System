@@ -7,25 +7,79 @@
     <x>0</x>
     <y>0</y>
     <width>709</width>
-    <height>394</height>
+    <height>425</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Add Transaction</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="formLayoutWidget">
+   <widget class="QPushButton" name="addTransactionButton">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>340</y>
+      <width>131</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add Transaction</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>340</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="formLayoutWidget_2">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>671</width>
-      <height>285</height>
+      <width>691</width>
+      <height>321</height>
      </rect>
     </property>
-    <layout class="QFormLayout" name="formLayout">
+    <layout class="QFormLayout" name="formLayout_2">
+     <property name="horizontalSpacing">
+      <number>30</number>
+     </property>
+     <property name="verticalSpacing">
+      <number>15</number>
+     </property>
+     <property name="leftMargin">
+      <number>10</number>
+     </property>
+     <property name="rightMargin">
+      <number>10</number>
+     </property>
      <item row="0" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>Transaction ID</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEdit_11"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_12">
        <property name="font">
         <font>
          <pointsize>8</pointsize>
@@ -34,22 +88,26 @@
         </font>
        </property>
        <property name="text">
-        <string>Date and Time</string>
+        <string>Date</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEdit">
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_13">
        <property name="font">
         <font>
-         <weight>75</weight>
-         <bold>true</bold>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
+       </property>
+       <property name="text">
+        <string>Time</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_14">
        <property name="font">
         <font>
          <pointsize>8</pointsize>
@@ -62,8 +120,11 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="lineEdit_12"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_15">
        <property name="font">
         <font>
          <pointsize>8</pointsize>
@@ -72,12 +133,15 @@
         </font>
        </property>
        <property name="text">
-        <string>Related Party</string>
+        <string>Handled By</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_4">
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="lineEdit_13"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_16">
        <property name="font">
         <font>
          <pointsize>8</pointsize>
@@ -90,22 +154,8 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Payment Method</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="lineEdit_2">
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="lineEdit_14">
        <property name="font">
         <font>
          <weight>75</weight>
@@ -114,22 +164,8 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Reference ID</string>
-       </property>
-      </widget>
-     </item>
      <item row="6" column="0">
-      <widget class="QLabel" name="label_7">
+      <widget class="QLabel" name="label_17">
        <property name="font">
         <font>
          <pointsize>8</pointsize>
@@ -138,27 +174,15 @@
         </font>
        </property>
        <property name="text">
-        <string>Category</string>
+        <string>Pyement Method</string>
        </property>
       </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLineEdit" name="lineEdit_3"/>
      </item>
      <item row="6" column="1">
-      <widget class="QLineEdit" name="lineEdit_4"/>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit_5"/>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEdit_6"/>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="lineEdit_7"/>
+      <widget class="QLineEdit" name="lineEdit_15"/>
      </item>
      <item row="7" column="0">
-      <widget class="QLabel" name="label_8">
+      <widget class="QLabel" name="label_18">
        <property name="font">
         <font>
          <pointsize>8</pointsize>
@@ -167,15 +191,15 @@
         </font>
        </property>
        <property name="text">
-        <string>Tax Amount</string>
+        <string>Tax %</string>
        </property>
       </widget>
      </item>
      <item row="7" column="1">
-      <widget class="QLineEdit" name="lineEdit_8"/>
+      <widget class="QLineEdit" name="lineEdit_16"/>
      </item>
      <item row="8" column="0">
-      <widget class="QLabel" name="label_9">
+      <widget class="QLabel" name="label_19">
        <property name="font">
         <font>
          <pointsize>8</pointsize>
@@ -189,45 +213,22 @@
       </widget>
      </item>
      <item row="8" column="1">
-      <widget class="QLineEdit" name="lineEdit_9"/>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>Handled By</string>
+      <widget class="QLineEdit" name="lineEdit_17">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
-      <widget class="QLineEdit" name="lineEdit_10"/>
+     <item row="2" column="1">
+      <widget class="QTimeEdit" name="timeEdit"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDateEdit" name="dateEdit"/>
      </item>
     </layout>
-   </widget>
-   <widget class="QPushButton" name="addTransactionButton">
-    <property name="geometry">
-     <rect>
-      <x>552</x>
-      <y>310</y>
-      <width>131</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add Transaction</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="backButton">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>310</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Back</string>
-    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -236,7 +237,7 @@
      <x>0</x>
      <y>0</y>
      <width>709</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

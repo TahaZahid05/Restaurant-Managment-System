@@ -20,10 +20,32 @@
       <x>10</x>
       <y>10</y>
       <width>671</width>
-      <height>314</height>
+      <height>321</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
+     <property name="horizontalSpacing">
+      <number>30</number>
+     </property>
+     <property name="verticalSpacing">
+      <number>15</number>
+     </property>
+     <property name="leftMargin">
+      <number>10</number>
+     </property>
+     <property name="rightMargin">
+      <number>10</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>Transaction ID</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEdit_11"/>
+     </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="font">
@@ -34,17 +56,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Date and Time</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
+        <string>Date</string>
        </property>
       </widget>
      </item>
@@ -58,7 +70,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Transaction Type</string>
+        <string>Time</string>
        </property>
       </widget>
      </item>
@@ -72,12 +84,32 @@
         </font>
        </property>
        <property name="text">
-        <string>Related Party</string>
+        <string>Transaction Type</string>
        </property>
       </widget>
      </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="lineEdit_6"/>
+     </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_4">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Handled By</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="lineEdit_7"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_5">
        <property name="font">
         <font>
          <pointsize>8</pointsize>
@@ -90,22 +122,14 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Payment Method</string>
-       </property>
-      </widget>
-     </item>
      <item row="5" column="1">
       <widget class="QLineEdit" name="lineEdit_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <weight>75</weight>
@@ -124,9 +148,12 @@
         </font>
        </property>
        <property name="text">
-        <string>Reference ID</string>
+        <string>Pyement Method</string>
        </property>
       </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLineEdit" name="lineEdit_3"/>
      </item>
      <item row="7" column="0">
       <widget class="QLabel" name="label_7">
@@ -138,43 +165,14 @@
         </font>
        </property>
        <property name="text">
-        <string>Category</string>
+        <string>Tax %</string>
        </property>
       </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLineEdit" name="lineEdit_3"/>
      </item>
      <item row="7" column="1">
       <widget class="QLineEdit" name="lineEdit_4"/>
      </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEdit_5"/>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="lineEdit_6"/>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="lineEdit_7"/>
-     </item>
      <item row="8" column="0">
-      <widget class="QLabel" name="label_8">
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Tax Amount</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QLineEdit" name="lineEdit_8"/>
-     </item>
-     <item row="9" column="0">
       <widget class="QLabel" name="label_9">
        <property name="font">
         <font>
@@ -188,28 +186,14 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="8" column="1">
       <widget class="QLineEdit" name="lineEdit_9"/>
      </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>Handled By</string>
-       </property>
-      </widget>
+     <item row="2" column="1">
+      <widget class="QTimeEdit" name="timeEdit"/>
      </item>
-     <item row="10" column="1">
-      <widget class="QLineEdit" name="lineEdit_10"/>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_11">
-       <property name="text">
-        <string>Transaction ID</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEdit_11"/>
+     <item row="1" column="1">
+      <widget class="QDateEdit" name="dateEdit"/>
      </item>
     </layout>
    </widget>
@@ -246,7 +230,7 @@
      <x>0</x>
      <y>0</y>
      <width>694</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

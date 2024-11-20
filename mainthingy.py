@@ -1,14 +1,12 @@
 import sys
+from PyQt6 import QtCore, QtWidgets, uic
 from datetime import datetime
-from PyQt6 import QtWidgets
-from PyQt6 import uic
 from validate_email import validate_email
-# Importing essential modules
-from PyQt6 import QtWidgets, uic
-from PyQt6.QtCore import QDate
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QHeaderView
-import sys
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QIntValidator
 import pyodbc
+import math
 
 server = 'TAHA\\SQLSERVER1'
 database = 'Project'  # Name of your Northwind database

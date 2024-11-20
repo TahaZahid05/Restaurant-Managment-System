@@ -82,6 +82,12 @@
       <height>22</height>
      </rect>
     </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
    </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
@@ -141,6 +147,26 @@
       <height>251</height>
      </rect>
     </property>
+    <column>
+     <property name="text">
+      <string>ID</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Name</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Category</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Price</string>
+     </property>
+    </column>
    </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
@@ -201,7 +227,7 @@
      <x>0</x>
      <y>0</y>
      <width>619</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

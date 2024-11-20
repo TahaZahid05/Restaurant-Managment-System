@@ -27,7 +27,7 @@
      <string>Date</string>
     </property>
    </widget>
-   <widget class="QDateEdit" name="dateEdit">
+   <widget class="QDateEdit" name="dateSelect">
     <property name="geometry">
      <rect>
       <x>150</x>
@@ -50,7 +50,7 @@
      <string>Time</string>
     </property>
    </widget>
-   <widget class="QTimeEdit" name="timeEdit">
+   <widget class="QTimeEdit" name="timeSelect">
     <property name="geometry">
      <rect>
       <x>400</x>
@@ -73,7 +73,7 @@
      <string>Customer Name</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="customerName">
     <property name="geometry">
      <rect>
       <x>150</x>
@@ -96,7 +96,7 @@
      <string>Party Size</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBox">
+   <widget class="QSpinBox" name="partySize">
     <property name="geometry">
      <rect>
       <x>150</x>
@@ -161,7 +161,7 @@
      <string>View Status</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_7">
+   <widget class="QLabel" name="generateId">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -171,10 +171,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>NOTE: FAILURE TO SHOW UP WILL COST A FINE OF 1000. RS!</string>
+     <string/>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBox">
+   <widget class="QComboBox" name="reservationComboBox">
     <property name="geometry">
      <rect>
       <x>150</x>

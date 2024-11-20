@@ -194,7 +194,7 @@
             <number>10</number>
            </property>
            <item row="0" column="0">
-            <widget class="QRadioButton" name="radioButton_16">
+            <widget class="QRadioButton" name="menuDiverseVPoor">
              <property name="text">
               <string>Very Poor</string>
              </property>
@@ -210,7 +210,7 @@
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QRadioButton" name="radioButton_17">
+            <widget class="QRadioButton" name="menuDiverseFair">
              <property name="text">
               <string>Fair</string>
              </property>
@@ -220,7 +220,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QRadioButton" name="radioButton_18">
+            <widget class="QRadioButton" name="menuDiversePoor">
              <property name="text">
               <string>Poor</string>
              </property>
@@ -230,7 +230,7 @@
             </widget>
            </item>
            <item row="0" column="3">
-            <widget class="QRadioButton" name="radioButton_19">
+            <widget class="QRadioButton" name="menuDiverseGood">
              <property name="text">
               <string>Good</string>
              </property>
@@ -240,7 +240,7 @@
             </widget>
            </item>
            <item row="0" column="4">
-            <widget class="QRadioButton" name="radioButton_20">
+            <widget class="QRadioButton" name="menuDiverseExcellent">
              <property name="text">
               <string>Excellent</string>
              </property>
@@ -298,7 +298,7 @@
             <number>10</number>
            </property>
            <item row="0" column="3">
-            <widget class="QRadioButton" name="radioButton_24">
+            <widget class="QRadioButton" name="freshnessGood">
              <property name="text">
               <string>Good</string>
              </property>
@@ -308,7 +308,7 @@
             </widget>
            </item>
            <item row="0" column="4">
-            <widget class="QRadioButton" name="radioButton_25">
+            <widget class="QRadioButton" name="freshnessExcellent">
              <property name="text">
               <string>Excellent</string>
              </property>
@@ -318,7 +318,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QRadioButton" name="radioButton_23">
+            <widget class="QRadioButton" name="freshnessPoor">
              <property name="text">
               <string>Poor</string>
              </property>
@@ -328,7 +328,7 @@
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QRadioButton" name="radioButton_21">
+            <widget class="QRadioButton" name="freshnessVPoor">
              <property name="text">
               <string>Very Poor</string>
              </property>
@@ -338,7 +338,7 @@
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QRadioButton" name="radioButton_22">
+            <widget class="QRadioButton" name="freshnessFair">
              <property name="text">
               <string>Fair</string>
              </property>
@@ -424,7 +424,7 @@
             <number>10</number>
            </property>
            <item row="0" column="0">
-            <widget class="QRadioButton" name="radioButton_6">
+            <widget class="QRadioButton" name="responseVPoor">
              <property name="text">
               <string>Very Poor</string>
              </property>
@@ -434,7 +434,7 @@
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QRadioButton" name="radioButton_7">
+            <widget class="QRadioButton" name="responseFair">
              <property name="text">
               <string>Fair</string>
              </property>
@@ -444,7 +444,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QRadioButton" name="radioButton_8">
+            <widget class="QRadioButton" name="responsePoor">
              <property name="text">
               <string>Poor</string>
              </property>
@@ -454,7 +454,7 @@
             </widget>
            </item>
            <item row="0" column="3">
-            <widget class="QRadioButton" name="radioButton_9">
+            <widget class="QRadioButton" name="responseGood">
              <property name="text">
               <string>Good</string>
              </property>
@@ -464,7 +464,7 @@
             </widget>
            </item>
            <item row="0" column="4">
-            <widget class="QRadioButton" name="radioButton_10">
+            <widget class="QRadioButton" name="responseExcellent">
              <property name="text">
               <string>Excellent</string>
              </property>
@@ -522,7 +522,7 @@
             <number>10</number>
            </property>
            <item row="0" column="0">
-            <widget class="QRadioButton" name="radioButton_11">
+            <widget class="QRadioButton" name="politenessVPoor">
              <property name="text">
               <string>Very Poor</string>
              </property>
@@ -532,7 +532,7 @@
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QRadioButton" name="radioButton_12">
+            <widget class="QRadioButton" name="politenessFair">
              <property name="text">
               <string>Fair</string>
              </property>
@@ -542,7 +542,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QRadioButton" name="radioButton_13">
+            <widget class="QRadioButton" name="politenessPoor">
              <property name="text">
               <string>Poor</string>
              </property>
@@ -552,7 +552,7 @@
             </widget>
            </item>
            <item row="0" column="3">
-            <widget class="QRadioButton" name="radioButton_14">
+            <widget class="QRadioButton" name="politenessGood">
              <property name="text">
               <string>Good</string>
              </property>
@@ -562,7 +562,7 @@
             </widget>
            </item>
            <item row="0" column="4">
-            <widget class="QRadioButton" name="radioButton_15">
+            <widget class="QRadioButton" name="politenessExcellent">
              <property name="text">
               <string>Excellent</string>
              </property>
@@ -621,9 +621,9 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup_4"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

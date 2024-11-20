@@ -48,6 +48,9 @@
        <height>181</height>
       </rect>
      </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>
@@ -155,6 +158,19 @@
       <string>Search</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="showAllButton">
+     <property name="geometry">
+      <rect>
+       <x>412</x>
+       <y>170</y>
+       <width>111</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show All Items</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
@@ -223,7 +239,7 @@
    <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>300</x>
       <y>710</y>
       <width>93</width>
       <height>28</height>
@@ -231,6 +247,19 @@
     </property>
     <property name="text">
      <string>Back</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="removeItem">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>710</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remove Item</string>
     </property>
    </widget>
   </widget>

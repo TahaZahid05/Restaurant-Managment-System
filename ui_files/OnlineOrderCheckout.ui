@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1188</width>
-    <height>606</height>
+    <height>674</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>10</x>
       <y>10</y>
       <width>541</width>
-      <height>211</height>
+      <height>291</height>
      </rect>
     </property>
     <property name="title">
@@ -32,16 +32,32 @@
        <x>20</x>
        <y>30</y>
        <width>501</width>
-       <height>176</height>
+       <height>242</height>
       </rect>
      </property>
-     <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="0,0">
+     <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0" columnstretch="0,0">
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Address</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Name</string>
         </property>
        </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="phoneNum"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="addressEdit"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="customerName"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_9">
@@ -60,21 +76,18 @@
       <item row="1" column="1">
        <widget class="QLineEdit" name="emailAddress"/>
       </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="phoneNum"/>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="userName"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Address</string>
+      <item row="4" column="1">
+       <widget class="QListWidget" name="addressList">
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectItems</enum>
+        </property>
+        <property name="currentRow">
+         <number>-1</number>
         </property>
        </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QTextEdit" name="addressBox"/>
       </item>
      </layout>
     </widget>
@@ -102,7 +115,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="cashButton">
         <property name="text">
          <string>Cash</string>
         </property>
@@ -116,7 +129,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="cardButton">
         <property name="text">
          <string>Card</string>
         </property>
@@ -124,7 +137,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="cardGroup">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -176,10 +189,14 @@
         </widget>
        </item>
        <item row="0" column="1" colspan="3">
-        <widget class="QLineEdit" name="lineEdit_3"/>
+        <widget class="QLineEdit" name="cardNumber"/>
        </item>
        <item row="1" column="3">
-        <widget class="QDateEdit" name="dateEdit"/>
+        <widget class="QDateEdit" name="expiryDate">
+         <property name="calendarPopup">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item row="1" column="2">
         <widget class="QLabel" name="label_6">
@@ -189,7 +206,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_4"/>
+        <widget class="QLineEdit" name="cvcNumber"/>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_7">
@@ -199,7 +216,7 @@
         </widget>
        </item>
        <item row="2" column="1" colspan="3">
-        <widget class="QLineEdit" name="lineEdit_5"/>
+        <widget class="QLineEdit" name="cardHolderName"/>
        </item>
       </layout>
      </widget>
@@ -231,7 +248,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>230</y>
+      <y>310</y>
       <width>531</width>
       <height>271</height>
      </rect>
@@ -339,7 +356,7 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>510</y>
+      <y>590</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -352,7 +369,7 @@
     <property name="geometry">
      <rect>
       <x>350</x>
-      <y>510</y>
+      <y>590</y>
       <width>93</width>
       <height>28</height>
      </rect>

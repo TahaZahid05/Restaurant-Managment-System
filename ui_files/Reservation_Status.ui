@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>544</width>
-    <height>291</height>
+    <height>330</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>20</y>
+      <y>60</y>
       <width>55</width>
       <height>16</height>
      </rect>
@@ -31,7 +31,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>20</y>
+      <y>60</y>
       <width>161</width>
       <height>22</height>
      </rect>
@@ -41,7 +41,7 @@
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>20</y>
+      <y>60</y>
       <width>55</width>
       <height>16</height>
      </rect>
@@ -54,7 +54,7 @@
     <property name="geometry">
      <rect>
       <x>340</x>
-      <y>20</y>
+      <y>60</y>
       <width>151</width>
       <height>22</height>
      </rect>
@@ -64,7 +64,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>90</y>
+      <y>100</y>
       <width>101</width>
       <height>16</height>
      </rect>
@@ -73,11 +73,11 @@
      <string>Customer Name</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="customerNameLine">
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>90</y>
+      <y>100</y>
       <width>361</width>
       <height>22</height>
      </rect>
@@ -87,7 +87,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>150</y>
+      <y>140</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -100,7 +100,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>150</y>
+      <y>140</y>
       <width>361</width>
       <height>22</height>
      </rect>
@@ -109,14 +109,60 @@
    <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>200</y>
+      <x>400</x>
+      <y>230</y>
       <width>93</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
      <string>Back</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reservation Id:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="reservationIdLine">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>20</y>
+      <width>361</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>180</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Status</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="statusLine">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>180</y>
+      <width>361</width>
+      <height>22</height>
+     </rect>
     </property>
    </widget>
   </widget>

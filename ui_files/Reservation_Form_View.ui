@@ -14,7 +14,7 @@
    <string>View Reservations</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableWidget" name="tableWidget">
+   <widget class="QTableWidget" name="reservationTable">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -72,6 +72,11 @@
     <column>
      <property name="text">
       <string>Party Size</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Status</string>
      </property>
     </column>
    </widget>

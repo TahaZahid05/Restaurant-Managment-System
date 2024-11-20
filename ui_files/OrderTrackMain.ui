@@ -14,7 +14,7 @@
    <string>Order Tracking</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableWidget" name="tableWidget">
+   <widget class="QTableWidget" name="orderTable">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -23,14 +23,18 @@
       <height>192</height>
      </rect>
     </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::SingleSelection</enum>
+    </property>
+    <property name="selectionBehavior">
+     <enum>QAbstractItemView::SelectRows</enum>
+    </property>
     <column>
      <property name="text">
       <string>Order ID</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Order On</string>
      </property>
     </column>
     <column>

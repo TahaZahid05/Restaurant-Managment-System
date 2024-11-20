@@ -8,8 +8,8 @@ from PyQt6.QtGui import QIntValidator
 import pyodbc
 import math
 
-server = 'TAHA\\SQLSERVER1'
-database = 'Project'  # Name of your Northwind database
+server = 'DESKTOP-BY-ABD'
+database = 'RMS'  # Name of project database
 use_windows_authentication = True  # Set to True to use Windows Authentication
 connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
 
@@ -1089,29 +1089,107 @@ class FeedbackScreen(QtWidgets.QMainWindow): # DONE #
     def back(self):
         self.close()
 
-class InventoryScreen(QtWidgets.QMainWindow): # ABDULLAH DOING #
+class InventoryScreen(QtWidgets.QMainWindow):
     def __init__(self):
         super(InventoryScreen, self).__init__()
 
         uic.loadUi('ui_files/InventoryManagment.ui', self)
 
+       
         self.addButton.clicked.connect(self.newItem)
         self.updateButton.clicked.connect(self.updateItem)
         self.deleteButton.clicked.connect(self.deleteItem)
         self.backButton.clicked.connect(self.back)
 
+        self.loadInventoryData()
+
+    def loadInventoryData(self):
+       
+        conn = pyodbc.connect(connection_string)
+        cursor = conn.cursor()
+
+        try:
+            query = """
+                SELECT Name, id, Stock, Last_Updated, CheckerStaffID, cost, company
+                FROM Ingredients;
+            """
+            cursor.execute(query)
+            rows = cursor.fetchall()
+
+            # Populate the table with the fetched data
+            self.tableWidget.setRowCount(0)
+            for row_index, row_data in enumerate(rows):
+                self.tableWidget.insertRow(row_index)
+                for col_index, value in enumerate(row_data):
+                    item = QtWidgets.QTableWidgetItem(str(value))
+                    self.tableWidget.setItem(row_index, col_index, item)
+
+        except pyodbc.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
     def newItem(self):
+      
         self.new_item_screen = AddItemScreen()
+        self.new_item_screen.itemAdded.connect(self.loadInventoryData)
         self.new_item_screen.show()
 
     def updateItem(self):
-        self.update_item_screen = UpdateItemScreen()
+      
+        selected_row = self.tableWidget.currentRow()
+        if selected_row == -1:
+            QtWidgets.QMessageBox.warning(self, "Selection Error", "Please select an item to update.")
+            return
+
+        # Gather data for the selected row
+        item_data = {
+            "id": int(self.tableWidget.item(selected_row, 1).text()),
+            "name": self.tableWidget.item(selected_row, 0).text(),
+            "stock": int(self.tableWidget.item(selected_row, 2).text()),
+            "last_updated": self.tableWidget.item(selected_row, 3).text(),
+            "staff_id": int(self.tableWidget.item(selected_row, 4).text()),
+            "cost": int(self.tableWidget.item(selected_row, 5).text()),
+            "company": self.tableWidget.item(selected_row, 6).text(),
+        }
+
+        self.update_item_screen = UpdateItemScreen(item_data)
+        self.update_item_screen.itemUpdated.connect(self.loadInventoryData)
         self.update_item_screen.show()
 
     def deleteItem(self):
-        dlg = QtWidgets.QMessageBox.information(self,"Item Deleted","Item successfully deleted!",QtWidgets.QMessageBox.StandardButton.Ok)
+       
+        selected_row = self.tableWidget.currentRow()
+        if selected_row == -1:
+            QtWidgets.QMessageBox.warning(self, "Selection Error", "Please select an item to delete.")
+            return
+
+        item_id = int(self.tableWidget.item(selected_row, 1).text())
+
+        confirm = QtWidgets.QMessageBox.question(
+            self, "Confirm Deletion",
+            "Are you sure you want to delete this item?",
+            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No
+        )
+
+        if confirm == QtWidgets.QMessageBox.StandardButton.Yes:
+            conn = pyodbc.connect(connection_string)
+            cursor = conn.cursor()
+
+            try:
+                delete_query = "DELETE FROM Ingredients WHERE id = ?;"
+                cursor.execute(delete_query, (item_id,))
+                conn.commit()
+                QtWidgets.QMessageBox.information(self, "Item Deleted", "Item successfully deleted!")
+                self.loadInventoryData()
+
+            except pyodbc.Error as e:
+                QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+            finally:
+                conn.close()
 
     def back(self):
+        """Close the inventory screen."""
         self.close()
 
 class MenuScreen(QtWidgets.QMainWindow): # DONE #
@@ -1368,34 +1446,108 @@ class StaffUpdateScreen(QtWidgets.QMainWindow):
     def back(self):
         self.close()
 
-class AddItemScreen(QtWidgets.QMainWindow): # ABDULLAH DOING #
+class AddItemScreen(QtWidgets.QMainWindow):
+    itemAdded = pyqtSignal()
+
     def __init__(self):
         super(AddItemScreen, self).__init__()
-
         uic.loadUi('ui_files/ItemAdd.ui', self)
 
         self.addButton.clicked.connect(self.addItem)
         self.backButton.clicked.connect(self.back)
 
     def addItem(self):
-        dlg = QtWidgets.QMessageBox.information(self,"Item Added","Item successfully added!",QtWidgets.QMessageBox.StandardButton.Ok)
-        
+        """Add a new item to the database."""
+        item_name = self.lineEdit_7.text()
+        company = self.userName.text()
+        stock = self.spinBox.value()
+        price = self.emailAddress.text()
+        staffID = self.lineEdit.text()
+
+        if not item_name or not company or stock < 0 or not price.isdigit():
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Please provide valid input.")
+            return
+
+        conn = pyodbc.connect(connection_string)
+        cursor = conn.cursor()
+
+        try:
+            query = """
+                INSERT INTO Ingredients
+                (Name, InventoryID, Company, Cost, Last_Updated, Stock, checkerStaffID)
+                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?,?);
+            """
+            cursor.execute(query, (item_name, 1, company, int(price), stock,staffID))
+            conn.commit()
+
+            QtWidgets.QMessageBox.information(self, "Item Added", "Item successfully added!")
+            self.itemAdded.emit()
+            self.close()
+
+        except pyodbc.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+            conn.rollback()
+
+        finally:
+            conn.close()
+
     def back(self):
+        """Close the Add Item screen."""
         self.close()
 
-class UpdateItemScreen(QtWidgets.QMainWindow): # ABDULLAH DOING #
-    def __init__(self):
-        super(UpdateItemScreen, self).__init__()
+class UpdateItemScreen(QtWidgets.QMainWindow):
+    itemUpdated = pyqtSignal()
 
+    def __init__(self, item_data):
+        super(UpdateItemScreen, self).__init__()
         uic.loadUi('ui_files/ItemUpdate.ui', self)
+
+        self.item_id = item_data["id"]
+        self.lineEdit_7.setText(item_data["name"])
+        self.userName.setText(item_data["company"])
+        self.spinBox.setValue(item_data["stock"])
+        self.emailAddress.setText(str(item_data["cost"]))
 
         self.updateButton.clicked.connect(self.updateItem)
         self.backButton.clicked.connect(self.back)
 
     def updateItem(self):
-        dlg = QtWidgets.QMessageBox.information(self,"Item Update","Item successfully updated!",QtWidgets.QMessageBox.StandardButton.Ok)
-        
+        """Update the item in the database."""
+        item_name = self.lineEdit_7.text()
+        company = self.userName.text()
+        stock = self.spinBox.value()
+        price = self.emailAddress.text()
+        staff_id = self.lineEdit.text()
+
+        if not item_name or not company or stock < 0 or not price.isdigit() or not staff_id.isdigit():
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Please provide valid input.")
+            return
+
+        conn = pyodbc.connect(connection_string)
+        cursor = conn.cursor()
+
+        try:
+            query = """
+                UPDATE Ingredients
+                SET Name = ?, Company = ?, Cost = ?, Stock = ?, Last_Updated = CURRENT_TIMESTAMP, CheckerStaffID = ?
+                WHERE id = ?;
+            """
+            cursor.execute(query, (item_name, company, int(price), stock, int(staff_id), self.item_id))
+            conn.commit()
+
+            QtWidgets.QMessageBox.information(self, "Item Updated", "Item successfully updated!")
+            self.itemUpdated.emit()
+            self.close()
+
+        except pyodbc.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+            conn.rollback()
+
+        finally:
+            conn.close()
+
     def back(self):
+        """Close the Update Item screen."""
         self.close()
 
 class editItemScreen(QtWidgets.QMainWindow): # DONE #

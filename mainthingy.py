@@ -8,8 +8,8 @@ from PyQt6.QtGui import QIntValidator
 import pyodbc
 import math
 
-server = 'DESKTOP-BY-ABD'
-database = 'RMS'  # Name of project database
+server = 'TAHA\\SQLSERVER1'
+database = 'Project'  # Name of your Northwind database
 use_windows_authentication = True  # Set to True to use Windows Authentication
 connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
 

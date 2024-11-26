@@ -44,21 +44,6 @@
     <attribute name="horizontalHeaderHighlightSections">
      <bool>true</bool>
     </attribute>
-    <column>
-     <property name="text">
-      <string>OrderID</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>StaffID</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Rating</string>
-     </property>
-    </column>
    </widget>
    <widget class="QPushButton" name="backButton">
     <property name="geometry">

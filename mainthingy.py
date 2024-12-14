@@ -1064,9 +1064,10 @@ class FeedbackScreen(QtWidgets.QMainWindow): # DONE #
         uic.loadUi('ui_files/CustomerFeedBackView.ui', self)
 
         populate_query = """
-            SELECT o.id, o.StaffID, f.Rating
+            SELECT o.id AS OrderID, o.StaffID, CONCAT(s.Full_Name, ' ', s.Last_Name) AS StaffName, f.Rating
             FROM Feedback f
-            JOIN Orders o ON f.OrderID = o.id;
+            JOIN Orders o ON f.OrderID = o.id
+            JOIN Staff s ON o.StaffID = s.id;
         """
         cursor.execute(populate_query)
         data = cursor.fetchall()
@@ -1078,6 +1079,10 @@ class FeedbackScreen(QtWidgets.QMainWindow): # DONE #
         self.backButton.clicked.connect(self.back)
     
     def populate_table(self, data):
+        self.tableWidget.setColumnCount(4)
+        self.tableWidget.setHorizontalHeaderLabels(["Order ID", "Staff ID", "Staff Name", "Rating"])
+        self.tableWidget.horizontalHeader().setVisible(True)
+        # self.tableWidget.resizeColumnsToContents()
         self.tableWidget.setRowCount(len(data))
 
         for i, row in enumerate(data):
@@ -1239,6 +1244,10 @@ class MenuScreen(QtWidgets.QMainWindow): # DONE #
         category = self.comboBox.currentText()
         price = self.lineEdit_2.text()
         description = self.textEdit.toPlainText()
+        if name == "" or category == "<Not Selected>" or price == "" or description == "":
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill all fields.")
+            return
+        
         cursor.execute(add_query, (name, category, price, description))
         connection.commit()
 
@@ -1277,6 +1286,7 @@ class MenuScreen(QtWidgets.QMainWindow): # DONE #
             selected_rows = self.getSelectedRowValues()
         else:
             QMessageBox.warning(self, "Error", "Please select an item to remove.")
+            return
 
         item_id = selected_rows[0]
         delete_query = "DELETE FROM MenuItem WHERE ID = ?"
@@ -1771,10 +1781,8 @@ class ProfitLossScreen(QtWidgets.QMainWindow):
 
     def back(self):
         self.close()
-    
 
-# Create an instance of QtWidgets . QApplication
+# Create an instance of QtWidgets.QApplication
 app = QtWidgets.QApplication(sys.argv)
 window = UI() # Create an instance of our class
-# window.show()
 app.exec() # Start the application

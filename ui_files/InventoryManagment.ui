@@ -23,6 +23,12 @@
       <height>192</height>
      </rect>
     </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::SingleSelection</enum>
+    </property>
+    <property name="selectionBehavior">
+     <enum>QAbstractItemView::SelectRows</enum>
+    </property>
     <column>
      <property name="text">
       <string>Item Name</string>
@@ -46,6 +52,16 @@
     <column>
      <property name="text">
       <string>CheckerStaffID</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>cost</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>company</string>
      </property>
     </column>
    </widget>

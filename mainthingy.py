@@ -881,7 +881,7 @@ class adminScreen(QtWidgets.QMainWindow):
         self.menu_screen.show()
 
     def showOrder(self):
-        self.order_screen = OrderScreen()
+        self.order_screen = OrderScreen(self.userID)
         self.order_screen.show()
 
     def showTransaction(self):
@@ -1404,29 +1404,194 @@ class MenuScreen(QtWidgets.QMainWindow): # DONE #
 
         dlg = QtWidgets.QMessageBox.information(self,"Menu Item Deleted","Menu Item successfully deleted!",QtWidgets.QMessageBox.StandardButton.Ok)
 
-class OrderScreen(QtWidgets.QMainWindow): # ABDULLAH DOING #
-    def __init__(self):
+class OrderScreen(QtWidgets.QMainWindow):
+    def __init__(self, userID):
         super(OrderScreen, self).__init__()
 
+        # Load the first UI (Order_ItemSelect)
+        uic.loadUi('ui_files/Order_ItemSelect.ui', self)
+        self.userID = userID
+        
+        # Initialize UI Components
+        self.loadMenuItems()
+        self.populate_category_box()
+        self.cartItems = []  # To store cart details
+        
+        # Connect Buttons
+        self.addCartButton.clicked.connect(self.addToCart)
+        self.showAllButton.clicked.connect(self.loadMenuItems)
+        self.searchButton.clicked.connect(self.searchItems)
+        self.checkOutButton.clicked.connect(self.goToCheckout)
+    
+
+        # Table Widgets Setup
+        self.menuTable.setColumnCount(3)  # Adjusted to 3 columns
+        self.menuTable.setHorizontalHeaderLabels(["Item Name", "Category", "Price"])  
+        
+        self.cartTable.setColumnCount(4)
+        self.cartTable.setHorizontalHeaderLabels(["Item Name", "Category", "Quantity", "Unit Price"])
+
+    def loadMenuItems(self):
+        """ Load all menu items into the menu table """
+        try:
+            conn = pyodbc.connect(connection_string)
+            cursor = conn.cursor()
+            
+            # Fetch all menu items excluding PeoplePerServing
+            query = "SELECT Name, Category, Price FROM MenuItem;"
+            cursor.execute(query)
+            menu_items = cursor.fetchall()
+
+            # Clear the table
+            self.menuTable.setRowCount(0)
+            
+            # Populate menu table
+            for row_idx, (name, category, price) in enumerate(menu_items):
+                self.menuTable.insertRow(row_idx)
+                self.menuTable.setItem(row_idx, 0, QtWidgets.QTableWidgetItem(name))
+                self.menuTable.setItem(row_idx, 1, QtWidgets.QTableWidgetItem(category))
+                self.menuTable.setItem(row_idx, 2, QtWidgets.QTableWidgetItem(str(price))) 
+
+        
+        except pyodbc.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
+    def addToCart(self):
+        """ Add selected items from the menu table to the cart """
+        selected_rows = self.menuTable.selectionModel().selectedRows()
+        
+        if not selected_rows:
+            QtWidgets.QMessageBox.warning(self, "Selection Error", "Please select at least one item to add to cart.")
+            return
+        
+        for row in selected_rows:
+            item_name = self.menuTable.item(row.row(), 0).text()
+            category = self.menuTable.item(row.row(), 1).text()
+            price = self.menuTable.item(row.row(), 2).text()
+
+            # Add to cart table
+            row_idx = self.cartTable.rowCount()
+            self.cartTable.insertRow(row_idx)
+            self.cartTable.setItem(row_idx, 0, QtWidgets.QTableWidgetItem(item_name))
+            self.cartTable.setItem(row_idx, 1, QtWidgets.QTableWidgetItem(category))
+            self.cartTable.setItem(row_idx, 2, QtWidgets.QTableWidgetItem("1"))  # Default quantity
+            self.cartTable.setItem(row_idx, 3, QtWidgets.QTableWidgetItem(price))
+            
+            self.cartItems.append((item_name, category, 1, price))  # Store cart data internally
+
+    def populate_category_box(self):
+        populate_category_query = "Select distinct Category from MenuItem"
+        cursor.execute(populate_category_query)
+        for row in cursor.fetchall():
+            print(row[0])
+            self.categoryBox.addItem(row[0])
+                
+    def searchItems(self):
+        populate_menu_query = "Select Name, Category, Price from  MenuItem where Name like ? AND Category LIKE ?"
+        cursor.execute(populate_menu_query,(f"%{self.itemNameLine.text()}%"),f"%{self.categoryBox.currentText()}%")
+        stringArray = ["Name","Category","Price"]
+        self.menuTable.clear()
+        for row_index, row_data in enumerate(cursor.fetchall()):
+            self.menuTable.insertRow(row_index)
+            for col_index, cell_data in enumerate(row_data):
+                item = QTableWidgetItem(str(cell_data))
+                self.menuTable.setItem(row_index, col_index, item)
+        self.menuTable.setHorizontalHeaderLabels(stringArray)
+    def goToCheckout(self):
+        """ Navigate to the second screen and pass cart details """
+        self.checkoutScreen = CheckoutScreenAdmin(self.userID, self.cartItems)
+        self.checkoutScreen.show()
+        self.close()
+
+
+class CheckoutScreenAdmin(QtWidgets.QMainWindow):
+    def __init__(self, userID, cartItems):
+        super(CheckoutScreenAdmin, self).__init__()
+
+        # Load the second UI (Order_Management)
         uic.loadUi('ui_files/Order_Management.ui', self)
+        self.userID = userID
+        self.cartItems = cartItems
 
         self.placeOrderButton.clicked.connect(self.placeOrder)
-        self.viewStatusButton.clicked.connect(self.viewStatus)
-        self.cancelOrderButton.clicked.connect(self.cancelOrder)
-        self.backButton.clicked.connect(self.back)
+        self.backButton.clicked.connect(self.goBack)
+
+        # Display selected items in the list widget
+        self.populateCartItems()
+
+    def populateCartItems(self):
+        """ Populate the list widget with cart items """
+        self.listWidget.clear()
+        for item_name, category, quantity, price in self.cartItems:
+            self.listWidget.addItem(f"{item_name} ({category}) x{quantity} - {price}")
+
+    def get_selected_items(self):
+        """ Retrieve selected items (with their quantity) from the cartItems list """
+        selected_items = []
+        for item_name, category, quantity, price in self.cartItems:
+            selected_items.append((item_name, quantity, price))  # Add quantity and price to list
+        return selected_items
 
     def placeOrder(self):
-        dlg = QtWidgets.QMessageBox.information(self,"Order Placed","Order successfully place!",QtWidgets.QMessageBox.StandardButton.Ok)
+        """ Place an order using cart details """
+        table_number = self.lineEdit.text()
+        special_request = self.lineEdit_2.text()
+        payment_type = None
+        if self.radioButton.isChecked():
+            payment_type = 'Cash'
+        elif self.radioButton_2.isChecked():
+            payment_type = 'Card'
+        else:
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Please select a payment type.")
+            return
 
-    def viewStatus(self):
-        self.view_status_screen = ViewStatusOrder()
-        self.view_status_screen.show()
+        if not table_number.isdigit():
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Table number must be numeric.")
+            return
 
-    def cancelOrder(self):
-        dlg = QtWidgets.QMessageBox.information(self,"Order Canceled","Order successfully cancelled!",QtWidgets.QMessageBox.StandardButton.Ok)
+        # Step 1: Get selected items and calculate total amount
+        selected_items = self.get_selected_items()  # Retrieve the selected items list
+        total_amount = 0
+        for item_name, quantity, price in selected_items:
+            total_amount += int(price)  # Calculate total by summing item prices
 
-    def back(self):
+        # Step 2: Insert transaction with calculated amount
+        try:
+            conn = pyodbc.connect(connection_string)
+            cursor = conn.cursor()
+
+            # Insert transaction into [Transaction] table
+            cursor.execute("""
+                INSERT INTO [Transaction] (StaffID, PaymentType, Amount, Date, Time, Type, InventoryID)
+                OUTPUT INSERTED.id
+                VALUES (?, ?, ?, CONVERT(date, GETDATE()), CONVERT(time, GETDATE()), 'Order', null);
+            """, (self.userID, payment_type, total_amount))
+            transaction_id = cursor.fetchone()[0]  # Get the transaction ID
+
+            # Step 3: Insert order into Orders table
+            cursor.execute("""
+                INSERT INTO Orders (Table_no, StaffID, TransactionID, Special_Request, Status, Date, Time)
+                VALUES (?, ?, ?, ?, 'Preparing', CONVERT(date, GETDATE()), CONVERT(time, GETDATE()));
+            """, (int(table_number), self.userID, transaction_id, special_request))
+
+            conn.commit()
+            QtWidgets.QMessageBox.information(self, "Order Placed", "Your order has been placed!")
+            self.close()
+
+        except pyodbc.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
+    def goBack(self):
+        """ Return to the order selection screen """
+        self.previousScreen = OrderScreen(self.userID)
+        self.previousScreen.show()
         self.close()
+
+
 
 class TransactionScreen(QtWidgets.QMainWindow):
     def __init__(self):

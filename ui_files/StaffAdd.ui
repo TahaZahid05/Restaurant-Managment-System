@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>616</width>
-    <height>301</height>
+    <width>620</width>
+    <height>460</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Add Staff</string>
@@ -17,8 +23,8 @@
    <widget class="QPushButton" name="addStaffButton">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>220</y>
+      <x>520</x>
+      <y>380</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -27,54 +33,89 @@
      <string>Add</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>380</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Back</string>
+    </property>
+   </widget>
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>10</y>
-      <width>581</width>
-      <height>198</height>
+      <width>601</width>
+      <height>361</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0" columnstretch="0,0">
-     <property name="horizontalSpacing">
-      <number>14</number>
+    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0" columnstretch="0,0">
+     <property name="leftMargin">
+      <number>5</number>
      </property>
-     <item row="5" column="1">
-      <widget class="QDateEdit" name="dateEdit"/>
+     <property name="rightMargin">
+      <number>5</number>
+     </property>
+     <property name="horizontalSpacing">
+      <number>10</number>
+     </property>
+     <property name="verticalSpacing">
+      <number>5</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>First Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEdit_7"/>
+     </item>
+     <item row="8" column="1">
+      <widget class="QLineEdit" name="lineEdit_8"/>
      </item>
      <item row="5" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Residential Address</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>DOB</string>
+        <string>Date of Hire</string>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLineEdit" name="emailAddress"/>
+      <widget class="QLineEdit" name="lineEdit_4"/>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="userName"/>
+     <item row="6" column="1">
+      <widget class="QDateEdit" name="dateEdit"/>
      </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="lineEdit_5"/>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="lineEdit"/>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Name</string>
+        <string>Last Name</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Position</string>
-       </property>
-      </widget>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="lineEdit_3"/>
      </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="lineEdit_6"/>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="lineEdit_5"/>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_9">
@@ -83,13 +124,13 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEdit_7"/>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="lineEdit_6"/>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_7">
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Staff ID</string>
+        <string>Position</string>
        </property>
       </widget>
      </item>
@@ -100,30 +141,34 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_2">
+     <item row="7" column="1">
+      <widget class="QLineEdit" name="lineEdit_2"/>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Residential Address</string>
+        <string>Salary</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
-      <widget class="QLineEdit" name="lineEdit"/>
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="lineEdit_9"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Username</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>Password</string>
+       </property>
+      </widget>
      </item>
     </layout>
-   </widget>
-   <widget class="QPushButton" name="backButton">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>220</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Back</string>
-    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -131,8 +176,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>616</width>
-     <height>26</height>
+     <width>620</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

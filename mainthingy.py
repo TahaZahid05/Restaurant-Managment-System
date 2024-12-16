@@ -2094,7 +2094,7 @@ class StaffScreen(QtWidgets.QMainWindow):
                 update_query = """
                     UPDATE Ingredients
                     SET CheckerStaffID = NULL
-                    WHERE StaffID = ?;
+                    WHERE CheckerStaffID = ?;
                 """
                 cursor.execute(update_query, (selected_rows[0]))
                 # connection.commit()
@@ -2127,7 +2127,7 @@ class StaffAddScreen(QtWidgets.QMainWindow):
         self.backButton.clicked.connect(self.back)
 
     def addStaff(self):
-        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.dateEdit.text() == "":
+        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.lineEdit_10.text() == "" or self.dateEdit.text() == "":
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields","Fill all fields to add an employee!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
         elif self.dateEdit.date() > QDate.currentDate():
@@ -2146,7 +2146,7 @@ class StaffAddScreen(QtWidgets.QMainWindow):
         
         email = self.lineEdit_6.text()
         address = self.lineEdit.text()
-        emergency_contact = self.lineEdit_2.text()
+        emergency_contact = self.lineEdit_10.text()
         try:
             emergency_contact = int(emergency_contact)
         except ValueError:
@@ -2166,13 +2166,14 @@ class StaffAddScreen(QtWidgets.QMainWindow):
             
         insert_query = """
             INSERT INTO Staff (Full_Name, Last_Name, Position, Phone_Number, Email, username, Password, Address, Emergency_Contact, Joining_Date, Salary, Status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Working')
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Working')
         """
-        cursor.execute(insert_query, (fname, lname, position, phone, email, username, password,address, emergency_contact, joining_date, salary))
+        cursor.execute(insert_query, (fname, lname, position, phone, email, username, password, address, emergency_contact, joining_date, salary))
         connection.commit()
 
         dlg = QtWidgets.QMessageBox.information(self,"Staff added","Staff successfully added!",QtWidgets.QMessageBox.StandardButton.Ok)
         self.staffscreen.populate_table()
+        self.back()
 
     def back(self):
         self.close()
@@ -2195,13 +2196,21 @@ class StaffUpdateScreen(QtWidgets.QMainWindow):
         self.lineEdit.setText(data[5])
         self.dateEdit.setDate(QDate.fromString(data[6], "yyyy-MM-dd"))
         self.lineEdit_2.setText(data[7])
+        self.lineEdit_10.setText(data[8])
+        self.lineEdit_11.setText(data[9])
+
+        query = "SELECT username, Password FROM Staff WHERE id = ?"
+        cursor.execute(query, (data[0]))
+        username, password = cursor.fetchone()
+        self.lineEdit_8.setText(username)
+        self.lineEdit_9.setText(password)
 
         self.updateStaffButton.clicked.connect(self.updateStaff)
         self.backButton.clicked.connect(self.back)
 
     def updateStaff(self):
 
-        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.dateEdit.text() == "":
+        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.lineEdit_10.text() == "" or self.dateEdit.text() == "":
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields","Fill all fields to add an employee!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
         elif self.dateEdit.date() > QDate.currentDate():
@@ -2220,7 +2229,7 @@ class StaffUpdateScreen(QtWidgets.QMainWindow):
         
         email = self.lineEdit_6.text()
         address = self.lineEdit.text()
-        emergency_contact = self.lineEdit_2.text()
+        emergency_contact = self.lineEdit_10.text()
         try:
             emergency_contact = int(emergency_contact)
         except ValueError:
@@ -2235,6 +2244,7 @@ class StaffUpdateScreen(QtWidgets.QMainWindow):
             dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Salary should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
         
+        status = self.lineEdit_11.text()
         username = self.lineEdit_8.text()
         password = self.lineEdit_9.text()
 
@@ -2247,6 +2257,7 @@ class StaffUpdateScreen(QtWidgets.QMainWindow):
         connection.commit()
         dlg = QtWidgets.QMessageBox.information(self,"Staff updated","Staff record updated successfully!",QtWidgets.QMessageBox.StandardButton.Ok)
         self.staffscreen.populate_table()
+        self.back()
 
     def back(self):
         self.close()

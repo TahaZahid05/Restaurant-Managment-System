@@ -39,10 +39,10 @@
       <x>10</x>
       <y>10</y>
       <width>601</width>
-      <height>361</height>
+      <height>371</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0" columnstretch="0,0">
+    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0" columnstretch="0,0">
      <property name="leftMargin">
       <number>5</number>
      </property>
@@ -55,8 +55,35 @@
      <property name="verticalSpacing">
       <number>5</number>
      </property>
-     <item row="8" column="1">
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Salary</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Date of Hire</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="lineEdit_4"/>
+     </item>
+     <item row="10" column="1">
       <widget class="QLineEdit" name="lineEdit_8"/>
+     </item>
+     <item row="8" column="1">
+      <widget class="QLineEdit" name="lineEdit_2"/>
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label_7">
@@ -65,61 +92,34 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEdit_7"/>
-     </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QLineEdit" name="lineEdit"/>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Residential Address</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
-      <widget class="QLineEdit" name="lineEdit_2"/>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEdit_7"/>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QDateEdit" name="dateEdit"/>
      </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_11">
        <property name="text">
-        <string>Date of Hire</string>
+        <string>Emergency Contact</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Salary</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEdit_4"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit_3"/>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="lineEdit_10"/>
      </item>
      <item row="3" column="1">
       <widget class="QLineEdit" name="lineEdit_5"/>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>Phone Number</string>
-       </property>
-      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_6">
@@ -128,30 +128,50 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QLineEdit" name="lineEdit_6"/>
      </item>
-     <item row="4" column="0">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>Phone Number</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="lineEdit_3"/>
+     </item>
+     <item row="5" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>Email Address</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Username</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="11" column="1">
       <widget class="QLineEdit" name="lineEdit_9"/>
      </item>
-     <item row="9" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="label_10">
        <property name="text">
         <string>Password</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLineEdit" name="lineEdit_11"/>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Status</string>
        </property>
       </widget>
      </item>

@@ -354,8 +354,10 @@ class onlineOrder(QtWidgets.QMainWindow):
         self.cartTable.removeRow(selected_item)
 
     def populate_menu_table(self):
+        column_names = ["Name","Category","Price"]
         self.menuTable.clear()
-        populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem"
+        self.menuTable.setHorizontalHeaderLabels(column_names)
+        populate_menu_query = "Select Name, Category, Price from  MenuItem"
         cursor.execute(populate_menu_query)
         for row_index, row_data in enumerate(cursor.fetchall()):
             self.menuTable.insertRow(row_index)
@@ -372,9 +374,9 @@ class onlineOrder(QtWidgets.QMainWindow):
             self.categoryBox.addItem(row[0])
                 
     def filter_menu_table(self):
-        populate_menu_query = "Select Name, Category, 1 AS [People Per Serving], Price from  MenuItem where Name like ? AND Category LIKE ?"
+        populate_menu_query = "Select Name, Category, Price from  MenuItem where Name like ? AND Category LIKE ?"
         cursor.execute(populate_menu_query,(f"%{self.itemNameLine.text()}%"),f"%{self.categoryBox.currentText()}%")
-        stringArray = ["Name","Category","People Per Serving","Price"]
+        stringArray = ["Name","Category","Price"]
         self.menuTable.clear()
         for row_index, row_data in enumerate(cursor.fetchall()):
             self.menuTable.insertRow(row_index)
@@ -390,7 +392,7 @@ class onlineOrder(QtWidgets.QMainWindow):
             return
         item_name = self.menuTable.item(selected_row, 0).text()
         item_category = self.menuTable.item(selected_row, 1).text()
-        item_price = self.menuTable.item(selected_row, 3).text()
+        item_price = self.menuTable.item(selected_row, 2).text()
         for i in range(self.cartTable.rowCount()):
             if self.cartTable.item(i, 0).text() == item_name and self.cartTable.item(i, 1).text() == item_category and self.cartTable.item(i, 3).text() == item_price:
                 self.cartTable.item(i, 2).setText(str(int(self.cartTable.item(i, 2).text()) + 1))
@@ -429,6 +431,11 @@ class checkOutScreen(QtWidgets.QMainWindow):
         self.cardNumber.setInputMask("0000-0000-0000-0000;_")
         self.cvcNumber.setInputMask("000;_") 
         self.expiryDate.setDisplayFormat("MM/yy")
+        self.cashButton.setChecked(True)
+        self.cardNumber.setEnabled(False)
+        self.cvcNumber.setEnabled(False)
+        self.expiryDate.setEnabled(False)
+        self.cardHolderName.setEnabled(False)
 
 
         self.cartTable = cartTable
@@ -436,7 +443,7 @@ class checkOutScreen(QtWidgets.QMainWindow):
         self.totalAmountInt = 0
         self.address = ""
 
-        self.deliveryCharges.setText("500")
+        self.lineEdit_2.setText("500")
 
         self.autofill_information()
         self.backButton.clicked.connect(self.back)
@@ -455,16 +462,20 @@ class checkOutScreen(QtWidgets.QMainWindow):
             self.cvcNumber.setEnabled(False)
             self.expiryDate.setEnabled(False)
             self.cardHolderName.setEnabled(False)
+            self.lineEdit_3.setText(str(self.totalAmountInt * 0.15))
         else:
             self.cardNumber.setEnabled(True)
             self.cvcNumber.setEnabled(True)
             self.expiryDate.setEnabled(True)
             self.cardHolderName.setEnabled(True)
+            self.lineEdit_3.setText(str(self.totalAmountInt * 0.12))
+        self.lineEdit_4.setText(str(self.totalAmountInt + 500 + float(self.lineEdit_3.text())))
 
     def back(self):
         self.close()
 
     def autofill_information(self):
+        print("yes")
         autofill_query = "Select concat(First_name, ' ', Last_name), Email, Phone_number from Customer where id = ?"
         cursor.execute(autofill_query,(self.userID))
         for row in cursor.fetchall():
@@ -488,8 +499,16 @@ class checkOutScreen(QtWidgets.QMainWindow):
             self.checkOutItemTable.setItem(row, 2, QTableWidgetItem(str(self.cartTable.item(row, 2).text())))
             self.checkOutItemTable.setItem(row, 3, QTableWidgetItem(str(float(self.cartTable.item(row, 4).text()) * int(self.cartTable.item(row, 2).text()))))
             self.totalAmountInt += float(self.cartTable.item(row, 4).text())
+        self.lineEdit.setText(str(self.totalAmountInt))
+        if(self.cashButton.isChecked()):
+            self.lineEdit_3.setText(str((self.totalAmountInt+500) * 0.15))
+        else:
+            self.lineEdit_3.setText(str((self.totalAmountInt+500) * 0.12))
 
-        self.totalAmount.setText(str(self.totalAmountInt + 500))
+        print("yes")
+        self.lineEdit_4.setText(str(self.totalAmountInt + 500 + float(self.lineEdit_3.text())))
+        
+        
 
         # self.address = self.addressList.currentItem().text()  
 
@@ -512,9 +531,9 @@ class checkOutScreen(QtWidgets.QMainWindow):
                 dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to place order!",QtWidgets.QMessageBox.StandardButton.Ok)
                 return
         insert_transaction_query = """
-            INSERT INTO [Transaction]([Date],[Time],[Type],[PaymentType],[Amount])
+            INSERT INTO [Transaction]([Date],[Time],[Type],[PaymentType],[Amount],[Tax])
             OUTPUT INSERTED.ID
-            VALUES (?,?,?,?,?)
+            VALUES (?,?,?,?,?,?)
         """
         date = str(datetime.today().date())
         time = str(datetime.today().time())
@@ -524,7 +543,13 @@ class checkOutScreen(QtWidgets.QMainWindow):
         elif (self.cardButton.isChecked()):
             self.paymentType = "Card"
         print(self.paymentType)
-        data = (date,time,"Order",self.paymentType,int(self.totalAmountInt + 500))
+        amountWithoutTax = float(self.lineEdit_2.text()) + float(self.lineEdit.text())
+        tax = 0
+        if(self.cashButton.isChecked()):
+            tax = 15
+        else:
+            tax = 12
+        data = (date,time,"Order",self.paymentType,amountWithoutTax,tax)
         cursor.execute(insert_transaction_query,data)
         print("yes")
 
@@ -744,7 +769,7 @@ class trackOrderScreen(QtWidgets.QMainWindow):
                 item = QTableWidgetItem(str(cell_data))
                 self.orderTable.setItem(row_index, col_index, item)
             total_amount_query = """
-                SELECT Amount from [Transaction] where id = (Select TransactionID from Orders where id = ?)
+                SELECT (Amount+(Amount*(Tax/100))) from [Transaction] where id = (Select TransactionID from Orders where id = ?)
             """
             cursor.execute(total_amount_query,(row_data[0]))
             for row in cursor.fetchall():
@@ -777,7 +802,6 @@ class viewDetailScreen(QtWidgets.QMainWindow):
         self.backButton.clicked.connect(self.back)
 
     def populateOrderDetails(self):
-        totalAmount = 0
         get_person_info_query = """
             Select concat(First_name, ' ', Last_name), Email, Phone_number from Customer where id = ?
         """
@@ -800,10 +824,14 @@ class viewDetailScreen(QtWidgets.QMainWindow):
                 item = QTableWidgetItem(str(cell_data))
                 self.itemTable.setItem(row_index, col_index, item)
             self.itemTable.setItem(row_index, 3, QTableWidgetItem(str(float(row_data[1]) * int(row_data[2]))))
-            totalAmount += float(row_data[1]) * int(row_data[2])
         
-        self.deliveryCharges.setText("500")
-        self.totalAmount.setText(str(totalAmount + 500))
+        transaction_query = "Select Amount, Tax from [Transaction] where id = (Select TransactionID from Orders where id = ?)"
+        cursor.execute(transaction_query,(self.orderID))
+        for row in cursor.fetchall():
+            self.lineEdit.setText(str(row[0] - 500))
+            self.lineEdit_2.setText("500")
+            self.lineEdit_3.setText(str(row[1]*(row[0] / 100)))
+            self.lineEdit_4.setText(str(row[0] + (row[0] * (row[1] / 100))))
 
         self.orderIdLine.setText(self.orderID)
         payment_type_query = "Select PaymentType from [Transaction] Inner Join Orders ON [Transaction].id = Orders.TransactionID where Orders.id = ?"
@@ -834,8 +862,10 @@ class viewDetailScreen(QtWidgets.QMainWindow):
         self.orderIdLine.setEnabled(False)
         self.specReqLine.setEnabled(False)
         self.statusLine.setEnabled(False)
-        self.totalAmount.setEnabled(False)
-        self.deliveryCharges.setEnabled(False)
+        self.lineEdit.setEnabled(False)
+        self.lineEdit_2.setEnabled(False)
+        self.lineEdit_3.setEnabled(False)
+        self.lineEdit_4.setEnabled(False)
         self.itemTable.setEnabled(False)
         self.cashButton.setEnabled(False)
         self.cardButton.setEnabled(False)

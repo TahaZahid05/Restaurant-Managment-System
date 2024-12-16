@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1188</width>
-    <height>674</height>
+    <height>726</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -250,7 +250,7 @@
       <x>10</x>
       <y>310</y>
       <width>531</width>
-      <height>271</height>
+      <height>201</height>
      </rect>
     </property>
     <property name="title">
@@ -267,32 +267,6 @@
      </property>
      <property name="text">
       <string>Items (Tax Inclusive)</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_13">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>200</y>
-       <width>111</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Delivery Charges: </string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_14">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>240</y>
-       <width>101</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Total Amount: </string>
      </property>
     </widget>
     <widget class="QTableWidget" name="checkOutItemTable">
@@ -325,38 +299,12 @@
       </property>
      </column>
     </widget>
-    <widget class="QLabel" name="deliveryCharges">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>200</y>
-       <width>55</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="totalAmount">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>240</y>
-       <width>55</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
    </widget>
    <widget class="QPushButton" name="orderButton">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>590</y>
+      <y>640</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -369,7 +317,7 @@
     <property name="geometry">
      <rect>
       <x>350</x>
-      <y>590</y>
+      <y>640</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -377,6 +325,58 @@
     <property name="text">
      <string>Back</string>
     </property>
+   </widget>
+   <widget class="QWidget" name="formLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>520</y>
+      <width>531</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Total: </string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEdit"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_13">
+       <property name="text">
+        <string>Delivery Charges: </string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="lineEdit_2"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_14">
+       <property name="text">
+        <string>Tax: </string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="lineEdit_3"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>Total Amount:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="lineEdit_4"/>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

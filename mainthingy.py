@@ -332,7 +332,7 @@ class onlineOrder(QtWidgets.QMainWindow):
     def __init__(self, userID):
         super(onlineOrder, self).__init__()
 
-        uic.loadUi('ui_files/Order_ItemSelect.ui', self)
+        uic.loadUi('ui_files/Order_ItemSelect_Customer.ui', self)
 
         self.userID = userID
 
@@ -1494,14 +1494,18 @@ class OrderScreen(QtWidgets.QMainWindow):
         self.checkOutButton.clicked.connect(self.goToCheckout)
         self.pushButton.clicked.connect(self.goToOrderStatus)
         self.removeItem.clicked.connect(self.removeFromCart)
+        self.backButton.clicked.connect(self.goBack)
     
 
         # Table Widgets Setup
         self.menuTable.setColumnCount(3)  # Adjusted to 3 columns
         self.menuTable.setHorizontalHeaderLabels(["Item Name", "Category", "Price"])  
         
-        self.cartTable.setColumnCount(4)
-        self.cartTable.setHorizontalHeaderLabels(["Item Name", "Category", "Quantity", "Unit Price"])
+        self.cartTable.setColumnCount(5)
+        self.cartTable.setHorizontalHeaderLabels(["Item Name", "Category", "Quantity", "Unit Price", "Total Price"])
+
+    def goBack(self):
+        self.close()
 
     def loadMenuItems(self):
         """ Load all menu items into the menu table """
@@ -1531,27 +1535,32 @@ class OrderScreen(QtWidgets.QMainWindow):
             conn.close()
 
     def addToCart(self):
-        """ Add selected items from the menu table to the cart """
-        selected_rows = self.menuTable.selectionModel().selectedRows()
-        
-        if not selected_rows:
-            QtWidgets.QMessageBox.warning(self, "Selection Error", "Please select at least one item to add to cart.")
+        selected_row = self.menuTable.currentRow()
+        if self.menuTable.selectedItems() == []:
+            dlg = QtWidgets.QMessageBox.warning(self,"No Item Selected","Select an item to add to cart!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
-        
-        for row in selected_rows:
-            item_name = self.menuTable.item(row.row(), 0).text()
-            category = self.menuTable.item(row.row(), 1).text()
-            price = self.menuTable.item(row.row(), 2).text()
-
-            # Add to cart table
-            row_idx = self.cartTable.rowCount()
-            self.cartTable.insertRow(row_idx)
-            self.cartTable.setItem(row_idx, 0, QtWidgets.QTableWidgetItem(item_name))
-            self.cartTable.setItem(row_idx, 1, QtWidgets.QTableWidgetItem(category))
-            self.cartTable.setItem(row_idx, 2, QtWidgets.QTableWidgetItem("1"))  # Default quantity
-            self.cartTable.setItem(row_idx, 3, QtWidgets.QTableWidgetItem(price))
-            
-            self.cartItems.append((item_name, category, 1, price))  # Store cart data internally
+        item_name = self.menuTable.item(selected_row, 0).text()
+        item_category = self.menuTable.item(selected_row, 1).text()
+        item_price = self.menuTable.item(selected_row, 2).text()
+        print(item_name, item_category, item_price)
+        for i in range(self.cartTable.rowCount()):
+            print(self.cartTable.item(i, 0).text())
+            print(self.cartTable.item(i, 1).text())
+            print(self.cartTable.item(i, 3).text())
+            if self.cartTable.item(i, 0).text() == item_name and self.cartTable.item(i, 1).text() == item_category and self.cartTable.item(i, 3).text() == item_price:
+                self.cartTable.item(i, 2).setText(str(int(self.cartTable.item(i, 2).text()) + 1))
+                self.cartTable.item(i, 4).setText(str(int(self.cartTable.item(i, 2).text()) * float(item_price)))
+                for i in range(len(self.cartItems)):
+                    if self.cartItems[i][0] == item_name and self.cartItems[i][1] == item_category and self.cartItems[i][3] == item_price:
+                        self.cartItems[i] = (item_name, item_category, int(self.cartTable.item(i, 2).text()), item_price)
+                return
+        self.cartTable.insertRow(self.cartTable.rowCount())
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 0, QTableWidgetItem(str(item_name)))
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 1, QTableWidgetItem(str(item_category)))
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 2, QTableWidgetItem(str("1"))) 
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 3, QTableWidgetItem(str(item_price)))
+        self.cartTable.setItem(self.cartTable.rowCount()-1, 4, QTableWidgetItem(str(item_price)))
+        self.cartItems.append((item_name, item_category, 1, item_price))  # Store cart data internally
 
     def removeFromCart(self):
         """Remove the selected item from the cart."""
@@ -1666,7 +1675,7 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
         selected_items = self.get_selected_items()  # Retrieve the selected items list
         total_amount = 0
         for item_name, quantity, price in selected_items:
-            total_amount += int(price)  # Calculate total by summing item prices
+            total_amount += (int(price)*int(quantity))  # Calculate total by summing item prices
 
         # Step 4: Apply tax based on payment type
         if payment_type == 'Card':
@@ -1687,7 +1696,7 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
                 INSERT INTO [Transaction] (StaffID, PaymentType, Amount, Tax, Date, Time, Type, InventoryID)
                 OUTPUT INSERTED.id
                 VALUES (?, ?, ?, ?, CONVERT(date, GETDATE()), CONVERT(time, GETDATE()), 'Order', 1);
-            """, (self.userID, payment_type, total_amount, tax_amount))  # Include tax_amount
+            """, (self.userID, payment_type, total_amount, tax_rate*100))  # Include tax_amount
             transaction_id = cursor.fetchone()[0]  # Get the transaction ID
 
             # Step 6: Insert order into Orders table
@@ -1887,8 +1896,58 @@ class ReservationScreen(QtWidgets.QMainWindow):
         uic.loadUi('ui_files/Reservation_Form_View.ui', self)
 
         self.backButton.clicked.connect(self.back)
+        self.upcomingButton.clicked.connect(self.showUpcomingReservations)
+        self.allButton.clicked.connect(self.showAllReservations)
 
         # Load reservation data when the screen is initialized
+        self.loadReservationData()
+
+    def showUpcomingReservations(self):
+        """Show only upcoming reservations."""
+        """Fetch reservation details and populate the table."""
+        conn = pyodbc.connect(connection_string)  # Replace with your connection string
+        cursor = conn.cursor()
+
+        try:
+            query = """
+                SELECT 
+                    r.id,
+                    r.CustomerID,
+                    concat(first_name, last_name),
+                    r.Date,
+                    r.Time,
+                    r.Party_Size,
+                    r.status
+                FROM 
+                    reservations r
+                JOIN 
+                    Customer c
+                ON 
+                    r.CustomerID = c.id
+                WHERE
+                    r.Date >= GETDATE();
+            """
+
+            cursor.execute(query)
+            rows = cursor.fetchall()
+
+            # Populate the table with fetched data
+            self.reservationTable.setRowCount(0)  # Clear existing rows
+
+            for row_index, row_data in enumerate(rows):
+                self.reservationTable.insertRow(row_index)
+                for col_index, value in enumerate(row_data):
+                    item = QtWidgets.QTableWidgetItem(str(value))
+                    self.reservationTable.setItem(row_index, col_index, item)
+
+        except pyodbc.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+
+        finally:
+            conn.close()
+
+    def showAllReservations(self):
+        """Show all reservations."""
         self.loadReservationData()
 
     def loadReservationData(self):

@@ -74,6 +74,7 @@ class registerUser(QtWidgets.QMainWindow):
         uic.loadUi('ui_files/User_Registration.ui', self)
         self.salaryLine.setEnabled(False)
         self.roleBox.setEnabled(False)
+        self.phoneLine_2.setEnabled(False)
         self.roleSelect.currentIndexChanged.connect(self.isStaff)
         self.returnLoginButton.clicked.connect(self.closeScreen)
         self.registerButton.clicked.connect(self.registering)
@@ -86,13 +87,15 @@ class registerUser(QtWidgets.QMainWindow):
         if(i == 0):
             self.salaryLine.setEnabled(False)
             self.roleBox.setEnabled(False)
+            self.phoneLine_2.setEnabled(False)
         else:
             self.salaryLine.setEnabled(True)
             self.roleBox.setEnabled(True)
             self.roleBox.addItems(["Manager","Chef","Waiter","Host","Sous Chef"])
+            self.phoneLine_2.setEnabled(True)
     
     def registering(self):
-        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == "" or self.addressBox.toPlainText() == "" or self.phoneLine.text() == "" or (self.salaryLine.text() == "" and self.roleSelect.currentText() == "Staff")):
+        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == "" or self.addressBox.toPlainText() == "" or self.phoneLine.text() == "" or (self.salaryLine.text() == "" and self.phoneLine_2.text() == "" and self.roleSelect.currentText() == "Staff")):
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to register!",QtWidgets.QMessageBox.StandardButton.Ok)
         elif (not(validate_email(self.emailAddress.text()))):
             dlg = QtWidgets.QMessageBox.warning(self,"Invalid Email Address","Email address is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
@@ -128,23 +131,34 @@ class registerUser(QtWidgets.QMainWindow):
                 if(self.roleSelect.currentText() == "Staff"):
                     insert_query = """
                         INSERT INTO Staff
-                        ([First_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary])
-                        VALUES (?,?,?,?,?,?,?,?,?)
+                        ([RestaurantID],[Full_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary],[Emergency_Contact],Status,[Joining_Date])
+                        VALUES (1,?,?,?,?,?,?,?,?,?,?,?,GETDATE())
                     """
                     data = (
-                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text(),self.roleBox.currentText(),self.salaryLine.text()
+                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text(),self.roleBox.currentText(),self.salaryLine.text(),self.phoneLine_2.text(),"Working"
                     )
                     cursor.execute(insert_query,data)
                 else:
-                    insert_query = """
+                    insert_query_customer = """
                         INSERT INTO Customer
-                        ([First_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_number])
-                        VALUES (?,?,?,?,?,?,?)
+                        ([Restaurant_id],[First_name],[Last_name],[Email],[username],[password],[Phone_number])
+                        OUTPUT INSERTED.id
+                        VALUES (1,?,?,?,?,?,?)
+                        
                     """
                     data = (
-                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text()
+                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.phoneLine.text()
                     )
-                    cursor.execute(insert_query,data)
+                    print(data)
+                    cursor.execute(insert_query_customer,data)
+                    insert_address_query = """
+                        INSERT INTO Customer_Address
+                        ([id],[Address])
+                        VALUES (?,?)
+                    """
+                    data = (cursor.fetchone()[0],self.addressBox.toPlainText())
+                    cursor.execute(insert_address_query,data)
+
                 connection.commit()
                 self.firstName.clear()
                 self.lastName.clear()

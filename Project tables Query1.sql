@@ -38,13 +38,14 @@ CREATE TABLE Customer_Address(
 
 -- Table: Reservations
 CREATE TABLE Reservations (
-    id INT PRIMARY KEY IDENTITY(1,1),
+    id INT NOT NULL IDENTITY(1,1),
     CustomerID INT NOT NULL,
     Date DATE NOT NULL,
     Time TIME NOT NULL,
     Party_size INT NOT NULL,
     Status VARCHAR(50),
-    FOREIGN KEY (CustomerID) REFERENCES Customer(id)
+    FOREIGN KEY (CustomerID) REFERENCES Customer(id),
+	PRIMARY KEY (id, CustomerID)
 );
 
 -- Table: Staff
@@ -59,7 +60,9 @@ CREATE TABLE Staff (
     Address VARCHAR(255),
     Phone_Number VARCHAR(15),
     Position VARCHAR(50),
-    Salary INT
+    Salary INT,
+	lastUpdatedBy INT,
+	FOREIGN KEY (lastUpdatedBy) REFERENCES Staff(id)
 );
 
 -- Updated Table: Inventory
@@ -121,9 +124,10 @@ CREATE TABLE Orders (
 
 -- Table: Feedback
 CREATE TABLE Feedback (
-    id INT PRIMARY KEY IDENTITY(1,1),
+    id INT NOT NULL IDENTITY(1,1),
     OrderID INT FOREIGN KEY REFERENCES Orders(id),
-    Rating FLOAT NOT NULL
+    Rating FLOAT NOT NULL,
+	PRIMARY KEY (id, OrderID)
 );
 
 -- Table: Order_Menu

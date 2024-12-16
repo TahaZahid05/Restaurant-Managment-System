@@ -961,13 +961,20 @@ class generateBillScreen(QtWidgets.QMainWindow): # DONE #
         self.staff_id = data[1]
         self.table_no = data[2]
         self.payment_type = data[3]
-        
+
+        query0 = """
+        SELECT TransactionID
+        FROM Orders 
+        WHERE id = ?
+        """
+        cursor.execute(query0, (self.order_id))
+        self.t_id = cursor.fetchone()[0]
+
         # Setting Order ID
         self.lineEdit.setReadOnly(True)
-        self.lineEdit.setText(data[0])
+        self.lineEdit.setText(self.order_id)
 
-        # Settting payment type
-
+        # Setting payment type
         query = "SELECT PaymentType as [Payment Type] FROM [Transaction] WHERE id = ?"
         cursor.execute(query, (self.order_id))
         payment_type = cursor.fetchone()[0]
@@ -1031,8 +1038,19 @@ class generateBillScreen(QtWidgets.QMainWindow): # DONE #
         datetime = QDateTime(t_date, t_time)
         self.dateTimeEdit.setDateTime(datetime)
 
+        # Setting tax%
+        self.lineEdit_5.setReadOnly(True)
+        query5 = """
+            SELECT Tax
+            FROM [Transaction]
+            WHERE id = ?;
+        """
+        cursor.execute(query5, (self.t_id))
+        tax = cursor.fetchone()[0]
+        self.lineEdit_5.setText(str(tax))
+
         self.lineEdit_6.setReadOnly(True)
-        self.lineEdit_5.textChanged.connect(self.calculate_total)
+        self.calculate_total()
 
         self.printButton.clicked.connect(self.printBill)
         self.paymentButton.clicked.connect(self.paymentReceived)

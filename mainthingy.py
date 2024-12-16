@@ -2141,14 +2141,41 @@ class StaffUpdateScreen(QtWidgets.QMainWindow):
         self.backButton.clicked.connect(self.back)
 
     def updateStaff(self):
+
+        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.dateEdit.text() == "":
+            dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields","Fill all fields to add an employee!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        elif self.dateEdit.date() > QDate.currentDate():
+            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Date","Invalid date!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+
         # update the staff table based on the records from the fields
         id = self.lineEdit_7.text()
         position = self.lineEdit_4.text()
-        phoneNo = self.lineEdit_5.text()
+        phone = self.lineEdit_5.text()
+        try:
+            phone = int(phone)
+        except ValueError:
+            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Phone number should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
         email = self.lineEdit_6.text()
         address = self.lineEdit.text()
-        joinDate = self.dateEdit.date().toString("yyyy-MM-dd")
+        emergency_contact = self.lineEdit_2.text()
+        try:
+            emergency_contact = int(emergency_contact)
+        except ValueError:
+            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Emergency contact should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
+        joining_date = self.dateEdit.date().toString("yyyy-MM-dd")
         salary = self.lineEdit_2.text()
+        try:
+            salary = int(salary)
+        except ValueError:
+            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Salary should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
         username = self.lineEdit_8.text()
         password = self.lineEdit_9.text()
 
@@ -2157,7 +2184,7 @@ class StaffUpdateScreen(QtWidgets.QMainWindow):
         SET Position = ?, Phone_Number = ?, Email = ?, username = ?, Password = ?, Address = ?, Joining_Date = ?, Salary = ?
         WHERE id = ?
         """
-        cursor.execute(update_query, (position, phoneNo, email, username, password, address, joinDate, salary, id))
+        cursor.execute(update_query, (position, phone, email, username, password, address, joining_date, salary, id))
         connection.commit()
         dlg = QtWidgets.QMessageBox.information(self,"Staff updated","Staff record updated successfully!",QtWidgets.QMessageBox.StandardButton.Ok)
         self.staffscreen.populate_table()

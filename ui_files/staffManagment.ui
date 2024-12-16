@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1042</width>
-    <height>354</height>
+    <width>1046</width>
+    <height>339</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Staff Managment</string>
@@ -53,11 +59,6 @@
     </column>
     <column>
      <property name="text">
-      <string>DOB</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
       <string>Residential Address</string>
      </property>
     </column>
@@ -86,7 +87,7 @@
     <property name="geometry">
      <rect>
       <x>840</x>
-      <y>270</y>
+      <y>220</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -98,8 +99,8 @@
    <widget class="QPushButton" name="addButton">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>230</y>
+      <x>460</x>
+      <y>220</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -111,8 +112,8 @@
    <widget class="QPushButton" name="updateButton">
     <property name="geometry">
      <rect>
-      <x>840</x>
-      <y>230</y>
+      <x>650</x>
+      <y>220</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -124,8 +125,8 @@
    <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
-      <x>642</x>
-      <y>270</y>
+      <x>840</x>
+      <y>260</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -140,8 +141,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1042</width>
-     <height>26</height>
+     <width>1046</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

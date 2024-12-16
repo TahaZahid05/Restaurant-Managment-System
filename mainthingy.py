@@ -1363,8 +1363,7 @@ class UpdateItemScreen(QtWidgets.QMainWindow):
     def back(self):
         """Close the Update Item screen."""
         self.close()
-
-        
+      
 class MenuScreen(QtWidgets.QMainWindow): # DONE #
     def __init__(self):
         super(MenuScreen, self).__init__()
@@ -1600,7 +1599,6 @@ class OrderScreen(QtWidgets.QMainWindow):
         self.checkoutScreen.show()
         self.close()
 
-
 class CheckoutScreenAdmin(QtWidgets.QMainWindow):
     def __init__(self, userID, cartItems, read_only=False):
         super(CheckoutScreenAdmin, self).__init__()
@@ -1810,9 +1808,6 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
         self.previousScreen.show()
         self.close()
 
-
-
-
 class TransactionScreen(QtWidgets.QMainWindow):
     def __init__(self, staff_id):
         self.userID = staff_id
@@ -1941,62 +1936,261 @@ class ReservationScreen(QtWidgets.QMainWindow):
         """Close the reservation screen."""
         self.close()
 
-
 class StaffScreen(QtWidgets.QMainWindow):
     def __init__(self):
         super(StaffScreen, self).__init__()
 
         uic.loadUi('ui_files/staffManagment.ui', self)
 
+        self.populate_table()
+
         self.addButton.clicked.connect(self.add)
         self.updateButton.clicked.connect(self.update)
         self.deleteButton.clicked.connect(self.delete)
         self.backButton.clicked.connect(self.back)
 
+    def populate_table(self):
+        populate_query = """
+            SELECT id, CONCAT(Full_Name, ' ', Last_Name) AS Name, Position, Phone_Number, Email, Address, Joining_Date, Salary, Emergency_Contact, Status
+            FROM Staff;
+        """
+        cursor.execute(populate_query)
+        data = cursor.fetchall()
+
+        self.tableWidget.setRowCount(len(data))
+        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+
+        for i, row in enumerate(data):
+            for j, value in enumerate(row):
+                item = QtWidgets.QTableWidgetItem(str(value))
+                item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
+                self.tableWidget.setItem(i, j, item)
+
     def add(self):
-        self.add_screen = StaffAddScreen()
+        self.add_screen = StaffAddScreen(self)
         self.add_screen.show()
 
+    def getSelectedRowValues(self):
+        selected_row = self.tableWidget.currentRow()
+        row_values = []
+        for col in range(self.tableWidget.columnCount()):
+            item = self.tableWidget.item(selected_row, col)
+            if item is not None:
+                row_values.append(item.text())
+        return row_values
+    
     def update(self):
-        self.update_screen = StaffUpdateScreen()
-        self.update_screen.show()
+        if self.tableWidget.selectedItems() != []:  # Check if a row is selected
+            selected_rows = self.getSelectedRowValues()
+            self.update_screen = StaffUpdateScreen(selected_rows, self)
+            self.update_screen.show()
+        else:
+            QMessageBox.warning(self, "Error", "Please select a staff member to update.")
+
+    def confirm_deletion(self):
+        # Create a QMessageBox instance
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Staff Deletion")
+        msg_box.setText("Are you sure you want to delete the staff records?")
+        
+        # Add custom buttons
+        delete_button = msg_box.addButton("Delete Records", QMessageBox.ButtonRole.AcceptRole)
+        keep_button = msg_box.addButton("Keep Records", QMessageBox.ButtonRole.RejectRole)
+
+        # Execute and check which button was pressed
+        msg_box.exec()
+
+        if msg_box.clickedButton() == delete_button:
+            return True
+        
+        elif msg_box.clickedButton() == keep_button:
+            return False
 
     def delete(self):
-        dlg = QtWidgets.QMessageBox.information(self,"Staff deleted","Staff successfully deleted!",QtWidgets.QMessageBox.StandardButton.Ok)
+        if self.tableWidget.selectedItems() != []:  # Check if a row is selected
+            selected_rows = self.getSelectedRowValues()
+            confirm = self.confirm_deletion()
+            if confirm:
+                update_query = """
+                    UPDATE Orders
+                    SET StaffID = NULL
+                    WHERE StaffID = ?;
+                """
+                cursor.execute(update_query, (selected_rows[0]))
+                # connection.commit()
+                update_query = """
+                    UPDATE [Transaction]
+                    SET StaffID = NULL
+                    WHERE StaffID = ?;
+                """
+                cursor.execute(update_query, (selected_rows[0]))
+                # connection.commit()
+                update_query = """
+                    UPDATE MenuItem
+                    SET StaffID = NULL
+                    WHERE StaffID = ?;
+                """
+                cursor.execute(update_query, (selected_rows[0]))
+                # connection.commit()
+                update_query = """
+                    UPDATE Ingredients
+                    SET CheckerStaffID = NULL
+                    WHERE StaffID = ?;
+                """
+                cursor.execute(update_query, (selected_rows[0]))
+                # connection.commit()
+                delete_query = "DELETE FROM Staff WHERE id = ?"
+                cursor.execute(delete_query, (selected_rows[0]))
+                connection.commit()
+                self.populate_table()
+                dlg = QtWidgets.QMessageBox.information(self,"Staff Deleted","Staff successfully deleted!",QtWidgets.QMessageBox.StandardButton.Ok)
+            else:
+                query = "UPDATE Staff SET Status = 'Terminated' WHERE id = ?"
+                cursor.execute(query, (selected_rows[0]))
+                connection.commit()
+                self.populate_table()
+                dlg = QtWidgets.QMessageBox.information(self,"Staff Terminated","Staff successfully terminated!",QtWidgets.QMessageBox.StandardButton.Ok)
+        else:
+            QMessageBox.warning(self, "Error", "Please select a staff member to remove.")
 
     def back(self):
         self.close()
 
 class StaffAddScreen(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, staff):
         super(StaffAddScreen, self).__init__()
 
         uic.loadUi('ui_files/StaffAdd.ui', self)
+
+        self.staffscreen = staff
 
         self.addStaffButton.clicked.connect(self.addStaff)
         self.backButton.clicked.connect(self.back)
 
     def addStaff(self):
+        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.dateEdit.text() == "":
+            dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields","Fill all fields to add an employee!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        elif self.dateEdit.date() > QDate.currentDate():
+            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Date","Invalid date!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
+        fname = self.lineEdit_7.text()
+        lname = self.lineEdit_3.text()
+        position = self.lineEdit_4.text()
+        phone = self.lineEdit_5.text()
+        try:
+            phone = int(phone)
+        except ValueError:
+            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Phone number should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
+        email = self.lineEdit_6.text()
+        address = self.lineEdit.text()
+        emergency_contact = self.lineEdit_2.text()
+        try:
+            emergency_contact = int(emergency_contact)
+        except ValueError:
+            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Emergency contact should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
+        joining_date = self.dateEdit.date().toString("yyyy-MM-dd")
+        salary = self.lineEdit_2.text()
+        try:
+            salary = int(salary)
+        except ValueError:
+            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Salary should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
+        username = self.lineEdit_8.text()
+        password = self.lineEdit_9.text()
+            
+        insert_query = """
+            INSERT INTO Staff (Full_Name, Last_Name, Position, Phone_Number, Email, username, Password, Address, Emergency_Contact, Joining_Date, Salary, Status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Working')
+        """
+        cursor.execute(insert_query, (fname, lname, position, phone, email, username, password,address, emergency_contact, joining_date, salary))
+        connection.commit()
+
         dlg = QtWidgets.QMessageBox.information(self,"Staff added","Staff successfully added!",QtWidgets.QMessageBox.StandardButton.Ok)
+        self.staffscreen.populate_table()
 
     def back(self):
         self.close()
 
 class StaffUpdateScreen(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, data, staff):
         super(StaffUpdateScreen, self).__init__()
 
         uic.loadUi('ui_files/StaffUpdate.ui', self)
+
+        self.staffscreen = staff
+
+        self.lineEdit_7.setText(data[0])
+        self.lineEdit_7.setReadOnly(True)
+        self.lineEdit_3.setText(data[1])
+        self.lineEdit_3.setReadOnly(True)
+        self.lineEdit_4.setText(data[2])
+        self.lineEdit_5.setText(data[3])
+        self.lineEdit_6.setText(data[4])
+        self.lineEdit.setText(data[5])
+        self.dateEdit.setDate(QDate.fromString(data[6], "yyyy-MM-dd"))
+        self.lineEdit_2.setText(data[7])
 
         self.updateStaffButton.clicked.connect(self.updateStaff)
         self.backButton.clicked.connect(self.back)
 
     def updateStaff(self):
-        dlg = QtWidgets.QMessageBox.information(self,"Staff updated","Staff successfully updated!",QtWidgets.QMessageBox.StandardButton.Ok)
+
+        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.dateEdit.text() == "":
+            dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields","Fill all fields to add an employee!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        elif self.dateEdit.date() > QDate.currentDate():
+            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Date","Invalid date!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+
+        # update the staff table based on the records from the fields
+        id = self.lineEdit_7.text()
+        position = self.lineEdit_4.text()
+        phone = self.lineEdit_5.text()
+        try:
+            phone = int(phone)
+        except ValueError:
+            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Phone number should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
+        email = self.lineEdit_6.text()
+        address = self.lineEdit.text()
+        emergency_contact = self.lineEdit_2.text()
+        try:
+            emergency_contact = int(emergency_contact)
+        except ValueError:
+            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Emergency contact should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
+        joining_date = self.dateEdit.date().toString("yyyy-MM-dd")
+        salary = self.lineEdit_2.text()
+        try:
+            salary = int(salary)
+        except ValueError:
+            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Salary should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        
+        username = self.lineEdit_8.text()
+        password = self.lineEdit_9.text()
+
+        update_query = """
+        UPDATE Staff
+        SET Position = ?, Phone_Number = ?, Email = ?, username = ?, Password = ?, Address = ?, Joining_Date = ?, Salary = ?
+        WHERE id = ?
+        """
+        cursor.execute(update_query, (position, phone, email, username, password, address, joining_date, salary, id))
+        connection.commit()
+        dlg = QtWidgets.QMessageBox.information(self,"Staff updated","Staff record updated successfully!",QtWidgets.QMessageBox.StandardButton.Ok)
+        self.staffscreen.populate_table()
 
     def back(self):
         self.close()
-
 
 class editItemScreen(QtWidgets.QMainWindow): # DONE #
     def __init__(self, data, menu):
@@ -2290,11 +2484,6 @@ class ProfitLossScreen(QtWidgets.QMainWindow):
 
         net_profit = gross_profit - (gross_profit * (tax/100))
         self.lineEdit_9.setText(str(net_profit))
-
-
-
-
-        
 
     def printTransaction(self):
         dlg = QtWidgets.QMessageBox.information(self,"Transaction print","Transaction successfully printed!",QtWidgets.QMessageBox.StandardButton.Ok)

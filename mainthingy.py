@@ -885,7 +885,7 @@ class adminScreen(QtWidgets.QMainWindow):
         self.order_screen.show()
 
     def showTransaction(self):
-        self.transaction_screen = TransactionScreen()
+        self.transaction_screen = TransactionScreen(self.userID)
         self.transaction_screen.show()
 
     def showReservations(self):
@@ -1076,6 +1076,7 @@ class generateBillScreen(QtWidgets.QMainWindow): # DONE #
 
 class FeedbackScreen(QtWidgets.QMainWindow): # DONE #
     def __init__(self):
+        print("yes")
         super(FeedbackScreen, self).__init__()
 
         uic.loadUi('ui_files/CustomerFeedBackView.ui', self)
@@ -1087,6 +1088,7 @@ class FeedbackScreen(QtWidgets.QMainWindow): # DONE #
             JOIN Staff s ON o.StaffID = s.id;
         """
         cursor.execute(populate_query)
+        print("yes")
         data = cursor.fetchall()
         self.tableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.tableWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
@@ -1349,7 +1351,8 @@ class MenuScreen(QtWidgets.QMainWindow): # DONE #
         self.removeItemButton.clicked.connect(self.removeItem)
 
     def populate_table(self):
-        populate_menu_query = "SELECT ID, Name, Category, Price FROM MenuItem"
+        self.tableWidget.clear()
+        populate_menu_query = "SELECT ID, Name, Category, Price, Discontinued FROM MenuItem"
         cursor.execute(populate_menu_query)
         data = cursor.fetchall()
 
@@ -1364,16 +1367,21 @@ class MenuScreen(QtWidgets.QMainWindow): # DONE #
                 self.tableWidget.setItem(i, j, item)
 
     def addItem(self):
-        add_query = "INSERT INTO MenuItem(Name, Category, Price, Description) VALUES (?, ?, ?, ?)"
+        add_query = "INSERT INTO MenuItem(Name, Category, Price, Description, Discontinued) VALUES (?, ?, ?, ?, ?)"
         name = self.lineEdit.text()
         category = self.comboBox.currentText()
         price = self.lineEdit_2.text()
         description = self.textEdit.toPlainText()
+        discontinued = 0
+        if(self.comboBox_2.currentText() == "Availabe to order"):
+            discontinued = 0
+        else:
+            discontinued = 1
         if name == "" or category == "<Not Selected>" or price == "" or description == "":
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill all fields.")
             return
         
-        cursor.execute(add_query, (name, category, price, description))
+        cursor.execute(add_query, (name, category, price, description, discontinued))
         connection.commit()
 
         self.populate_table()
@@ -1407,20 +1415,24 @@ class MenuScreen(QtWidgets.QMainWindow): # DONE #
             QMessageBox.warning(self, "Error", "Please select an item to edit.")
 
     def removeItem(self):
-        if self.tableWidget.selectedItems() != []:  # Check if no row is selected
-            selected_rows = self.getSelectedRowValues()
-        else:
-            QMessageBox.warning(self, "Error", "Please select an item to remove.")
-            return
+        dlg = QtWidgets.QMessageBox.question(self,"Delete Menu Item","Are you sure you want to delete this item? Deleting this item would also delete its records from any orders",QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
+        if dlg == QtWidgets.QMessageBox.StandardButton.Yes:
+            if self.tableWidget.selectedItems() != []:  # Check if no row is selected
+                selected_rows = self.getSelectedRowValues()
+            else:
+                QMessageBox.warning(self, "Error", "Please select an item to remove.")
+                return
 
-        item_id = selected_rows[0]
-        delete_query = "DELETE FROM MenuItem WHERE ID = ?"
-        cursor.execute(delete_query, (item_id))
-        connection.commit()
+            item_id = selected_rows[0]
+            delete_order_item_query = "DELETE FROM Order_Menu WHERE Item_ID = ?"
+            delete_query = "DELETE FROM MenuItem WHERE ID = ?"
+            cursor.execute(delete_order_item_query, (item_id))
+            cursor.execute(delete_query, (item_id))
+            connection.commit()
 
-        self.populate_table()
+            self.populate_table()
 
-        dlg = QtWidgets.QMessageBox.information(self,"Menu Item Deleted","Menu Item successfully deleted!",QtWidgets.QMessageBox.StandardButton.Ok)
+            dlg = QtWidgets.QMessageBox.information(self,"Menu Item Deleted","Menu Item successfully deleted!",QtWidgets.QMessageBox.StandardButton.Ok)
 
 class OrderScreen(QtWidgets.QMainWindow):
     def __init__(self, userID):
@@ -1612,7 +1624,8 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
 
 
 class TransactionScreen(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, staff_id):
+        self.userID = staff_id
         super(TransactionScreen, self).__init__()
 
         uic.loadUi('ui_files/TransactionView.ui', self)
@@ -1627,18 +1640,20 @@ class TransactionScreen(QtWidgets.QMainWindow):
 
     def populate_table(self):
         populate_query = """
-            SELECT t.id AS TransactionID, t.Date AS TransactionDate, t.Time AS TransactionTime, t.Type AS TransactionType, CONCAT(s.Full_Name, ' ', s.Last_Name) AS StaffName, t.Amount AS TransactionAmount, t.PaymentType AS PaymentType
+            SELECT t.id AS TransactionID, t.Date AS TransactionDate, t.Time AS TransactionTime, t.Type AS TransactionType, CONCAT(s.Full_Name, ' ', s.Last_Name) AS StaffName, t.Amount AS TransactionAmount, t.PaymentType AS PaymentType, t.tax AS Tax
             FROM [Transaction] t
             JOIN Staff s ON t.StaffID = s.id;
         """
         cursor.execute(populate_query)
         data = cursor.fetchall()
-        taxPercentage = 13
+        # taxPercentage = 13
         self.updated_data = []
         for record in data:
             amount = record[5]
+            taxPercentage = record[7]
             total = math.ceil(amount * (1 + taxPercentage / 100))
-            self.updated_data.append(tuple(record) + (taxPercentage, total))
+            print(total, taxPercentage, amount)
+            self.updated_data.append(tuple(record) + (total,))
 
         self.tableWidget.setRowCount(len(data))
         self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
@@ -1659,7 +1674,7 @@ class TransactionScreen(QtWidgets.QMainWindow):
         return row_values
 
     def add(self):
-        self.add_screen = AddTransactionScreen(self)
+        self.add_screen = AddTransactionScreen(self,self.userID)
         self.add_screen.show()
 
     def update(self):
@@ -1674,7 +1689,7 @@ class TransactionScreen(QtWidgets.QMainWindow):
         dlg = QtWidgets.QMessageBox.information(self,"Delete Transaction","Transaction successfully deleted!",QtWidgets.QMessageBox.StandardButton.Ok)
 
     def calculate(self):
-        self.calculate_screen = ProfitLossScreen()
+        self.calculate_screen = ProfitLossScreen(self.dateEdit.date(), self.dateEdit_2.date())
         self.calculate_screen.show()
 
     def back(self):
@@ -1805,9 +1820,15 @@ class editItemScreen(QtWidgets.QMainWindow): # DONE #
         self.item_name = data[1]
         self.item_category = data[2]
         self.item_price = data[3]
+        self.item_discontinuted = data[4]
 
         self.lineEdit.setText(self.item_name)
         self.lineEdit_2.setText(self.item_price)
+        print(self.item_discontinuted)
+        if(self.item_discontinuted == "False"):
+            self.comboBox_2.setCurrentIndex(0)
+        else:
+            self.comboBox_2.setCurrentIndex(1)
 
         find_description = "SELECT Description FROM MenuItem WHERE ID = ?"
         cursor.execute(find_description, (self.item_id))
@@ -1822,10 +1843,11 @@ class editItemScreen(QtWidgets.QMainWindow): # DONE #
         for c in categories:
             self.comboBox.addItem(c[0])
 
-        category_query1 = "SELECT Category FROM MenuItem WHERE ID = ?"
-        cursor.execute(category_query1, (self.item_id))
-        category = cursor.fetchone()[0]
-        self.comboBox.setCurrentText(category)
+        # category_query1 = "SELECT Category FROM MenuItem WHERE ID = ?"
+        # cursor.execute(category_query1, (self.item_id))
+        # category = cursor.fetchone()[0]
+        # self.comboBox.setCurrentText(category)
+        self.comboBox.setCurrentText(self.item_category)
 
         self.backButton.clicked.connect(self.back)
         self.updateItemButton.clicked.connect(self.updateItem)
@@ -1838,7 +1860,7 @@ class editItemScreen(QtWidgets.QMainWindow): # DONE #
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to update item!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
             
-        elif self.lineEdit.text() == self.item_name and self.lineEdit_2.text() == self.item_price and self.textEdit.toPlainText() == self.description:
+        elif self.lineEdit.text() == self.item_name and self.lineEdit_2.text() == self.item_price and self.textEdit.toPlainText() == self.description and self.comboBox_2.currentIndex() == self.item_discontinuted and self.comboBox.currentText() == self.item_category:
             dlg = QtWidgets.QMessageBox.warning(self,"No Changes Made","No changes made to item!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
 
@@ -1846,8 +1868,13 @@ class editItemScreen(QtWidgets.QMainWindow): # DONE #
         category = self.comboBox.currentText()
         price = self.lineEdit_2.text()
         description = self.textEdit.toPlainText()
-        update_query = "UPDATE MenuItem SET Name = ?, Category = ?, Price = ?, Description = ? WHERE ID = ?" 
-        cursor.execute(update_query, (name, category, price, description, self.item_id))
+        discontinued = 1
+        if(self.comboBox_2.currentText() == "Availabe to order"):
+            discontinued = 0
+        else:
+            discontinued = 1
+        update_query = "UPDATE MenuItem SET Name = ?, Category = ?, Price = ?, Description = ?, Discontinued = ? WHERE ID = ?" 
+        cursor.execute(update_query, (name, category, price, description, discontinued, self.item_id))
         connection.commit()
 
         self.menuscreen.populate_table()
@@ -1866,12 +1893,13 @@ class ViewStatusOrder(QtWidgets.QMainWindow): # ABDULLAH DOING #
         self.close()
 
 class AddTransactionScreen(QtWidgets.QMainWindow):
-    def __init__(self, transaction):
+    def __init__(self, transaction, userID):
         super(AddTransactionScreen, self).__init__()
 
         uic.loadUi('ui_files/TransactionAdd.ui', self)
 
         self.transaction = transaction
+        self.userID = userID
 
         self.lineEdit_11.setText("Auto Generated")
         self.lineEdit_11.setReadOnly(True)
@@ -1898,9 +1926,15 @@ class AddTransactionScreen(QtWidgets.QMainWindow):
         payment = self.lineEdit_15.text()
         tax = self.lineEdit_16.text()
         total = self.lineEdit_17.text()
-
-        insert_query = "INSERT INTO [Transaction](Date, Time, Type, StaffID, Amount, PaymentType) VALUES (?, ?, ?, ?, ?, ?)"
-        cursor.execute(insert_query, (date, time, ttype, staff, amount, payment))
+        inventoryID = 0
+        if(ttype == "Inventory"):
+            inventoryID = 1
+        if(inventoryID == 1):
+            insert_query = "INSERT INTO [Transaction](Date, Time, Type, StaffID, Amount, PaymentType, InventoryID, Tax) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            cursor.execute(insert_query, (date, time, ttype, self.userID, amount, payment,inventoryID, tax))
+        else:
+            insert_query = "INSERT INTO [Transaction](Date, Time, Type, StaffID, Amount, PaymentType, Tax) VALUES (?, ?, ?, ?, ?, ?, ?)"
+            cursor.execute(insert_query, (date, time, ttype, self.userID, amount, payment, tax))
         connection.commit()
 
         self.transaction.populate_table()
@@ -1980,8 +2014,8 @@ class UpdateTransactionScreen(QtWidgets.QMainWindow):
         tax = self.lineEdit_4.text()
         total = self.lineEdit_9.text()
 
-        update_query = "UPDATE [Transaction] SET Date = ?, Time = ?, Type = ?, StaffID = ?, Amount = ?, PaymentType = ? WHERE id = ?"
-        cursor.execute(update_query, (date, time, ttype, staff, amount, payment, tid))
+        update_query = "UPDATE [Transaction] SET Date = ?, Time = ?, Type = ?, StaffID = ?, Tax = ?, Amount = ?, PaymentType = ? WHERE id = ?"
+        cursor.execute(update_query, (date, time, ttype, staff, tax, amount, payment, tid))
         connection.commit()
 
         self.transaction.populate_table()
@@ -2001,13 +2035,76 @@ class UpdateTransactionScreen(QtWidgets.QMainWindow):
         self.close()
 
 class ProfitLossScreen(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, initialDate, endDate):
         super(ProfitLossScreen, self).__init__()
+
+        self.startDate = initialDate
+        self.endDate = endDate
 
         uic.loadUi('ui_files/ProfitLossScreen.ui', self)
 
         self.printButton.clicked.connect(self.printTransaction)
         self.backButton.clicked.connect(self.back)
+        self.populate_table()
+        self.calcButton.clicked.connect(self.calculate_table)
+
+    def populate_table(self):
+        
+        totalRevenue_query = "SELECT SUM(Amount+(Amount * (Tax/100))) FROM [Transaction] WHERE Date BETWEEN ? AND ?"
+        cursor.execute(totalRevenue_query, (self.startDate.toString("yyyy-MM-dd"), self.endDate.toString("yyyy-MM-dd")))
+        totalRevenue = cursor.fetchone()[0]
+        if(totalRevenue == None):
+            totalRevenue = 0
+        self.lineEdit.setText(str(totalRevenue))
+
+        advertising_query = "SELECT SUM(Amount+(Amount * (Tax/100))) FROM [Transaction] where Type = 'Advertising' AND Date BETWEEN ? AND ?"
+        cursor.execute(advertising_query, (self.startDate.toString("yyyy-MM-dd"), self.endDate.toString("yyyy-MM-dd")))
+        advertising = cursor.fetchone()[0]
+        if(advertising == None):
+            advertising = 0
+        self.lineEdit_6.setText(str(advertising))
+
+        utility_query = "SELECT SUM(Amount+(Amount * (Tax/100))) FROM [Transaction] where Type = 'Utility' AND Date BETWEEN ? AND ?"
+        cursor.execute(utility_query, (self.startDate.toString("yyyy-MM-dd"), self.endDate.toString("yyyy-MM-dd")))
+        utility = cursor.fetchone()[0]
+        if(utility == None):
+            utility = 0
+        self.lineEdit_7.setText(str(utility))
+
+        repairs_maintenance_query = "SELECT SUM(Amount+(Amount * (Tax/100))) FROM [Transaction] where (Type = 'Repairs' OR Type = 'Maintenance') AND Date BETWEEN ? AND ?"
+        cursor.execute(repairs_maintenance_query, (self.startDate.toString("yyyy-MM-dd"), self.endDate.toString("yyyy-MM-dd")))
+        repairs_maintenance = cursor.fetchone()[0]
+        if(repairs_maintenance == None):
+            repairs_maintenance = 0
+        self.lineEdit_2.setText(str(repairs_maintenance))
+    
+        wages_shipment_query = "SELECT SUM(Amount+(Amount * (Tax/100))) FROM [Transaction] where (Type = 'Wages' OR Type = 'Shipment') AND Date BETWEEN ? AND ?"
+        cursor.execute(wages_shipment_query, (self.startDate.toString("yyyy-MM-dd"), self.endDate.toString("yyyy-MM-dd")))
+        wages_shipment = cursor.fetchone()[0]
+        if(wages_shipment == None):
+            wages_shipment = 0
+        self.lineEdit_3.setText(str(wages_shipment))
+
+    def calculate_table(self):
+        if(self.lineEdit_4.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_10.text() == ""):
+            dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to calculate profit/loss!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        profit = float(self.lineEdit_8.text())
+        tax = float(self.lineEdit_10.text())
+        totalRevenue = float(self.lineEdit.text())
+        totalExpenses = totalRevenue - (totalRevenue * (profit/100)) + float(self.lineEdit_4.text())
+        self.lineEdit_5.setText(str(totalExpenses))
+
+        gross_profit = totalRevenue - totalExpenses
+        self.lineEdit_11.setText(str(gross_profit))
+
+        net_profit = gross_profit - (gross_profit * (tax/100))
+        self.lineEdit_9.setText(str(net_profit))
+
+
+
+
+        
 
     def printTransaction(self):
         dlg = QtWidgets.QMessageBox.information(self,"Transaction print","Transaction successfully printed!",QtWidgets.QMessageBox.StandardButton.Ok)

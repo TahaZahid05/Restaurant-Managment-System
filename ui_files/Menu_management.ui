@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>619</width>
-    <height>697</height>
+    <height>815</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,7 +93,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>190</y>
+      <y>240</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -106,7 +106,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>190</y>
+      <y>240</y>
       <width>451</width>
       <height>87</height>
      </rect>
@@ -116,7 +116,7 @@
     <property name="geometry">
      <rect>
       <x>400</x>
-      <y>300</y>
+      <y>350</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -129,7 +129,7 @@
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>300</y>
+      <y>350</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -142,7 +142,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>350</y>
+      <y>400</y>
       <width>571</width>
       <height>251</height>
      </rect>
@@ -167,12 +167,17 @@
       <string>Price</string>
      </property>
     </column>
+    <column>
+     <property name="text">
+      <string>Discontinued</string>
+     </property>
+    </column>
    </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>330</y>
+      <y>380</y>
       <width>55</width>
       <height>16</height>
      </rect>
@@ -185,7 +190,7 @@
     <property name="geometry">
      <rect>
       <x>400</x>
-      <y>610</y>
+      <y>660</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -198,7 +203,7 @@
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>610</y>
+      <y>660</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -210,8 +215,8 @@
    <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>610</y>
+      <x>300</x>
+      <y>660</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -220,6 +225,39 @@
      <string>Back</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>180</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Item Current Availability</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_2">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>180</y>
+      <width>411</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Availabe to order</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Discontinued</string>
+     </property>
+    </item>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -227,7 +265,7 @@
      <x>0</x>
      <y>0</y>
      <width>619</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

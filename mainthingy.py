@@ -2068,7 +2068,7 @@ class StaffAddScreen(QtWidgets.QMainWindow):
         self.backButton.clicked.connect(self.back)
 
     def addStaff(self):
-        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.dateEdit.text() == "":
+        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.dateEdit.text() == "":
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields","Fill all fields to add an employee!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
         elif self.dateEdit.date() > QDate.currentDate():

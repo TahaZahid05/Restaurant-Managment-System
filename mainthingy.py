@@ -2458,11 +2458,6 @@ class ProfitLossScreen(QtWidgets.QMainWindow):
         net_profit = gross_profit - (gross_profit * (tax/100))
         self.lineEdit_9.setText(str(net_profit))
 
-
-
-
-        
-
     def printTransaction(self):
         dlg = QtWidgets.QMessageBox.information(self,"Transaction print","Transaction successfully printed!",QtWidgets.QMessageBox.StandardButton.Ok)
 

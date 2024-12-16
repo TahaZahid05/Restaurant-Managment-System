@@ -1128,6 +1128,18 @@ class InventoryScreen(QtWidgets.QMainWindow):
 
         self.loadInventoryData()
 
+    def get_selected_row(self):
+        """ Utility function to get the currently selected row """
+        selected_items = self.tableWidget.selectedItems()
+        if not selected_items:  # If no row is selected
+            QtWidgets.QMessageBox.warning(
+                self, 
+                "Selection Required", 
+                "Please select one item to proceed."
+            )
+            return None
+        return selected_items[0].row() 
+    
     def loadInventoryData(self):
        
         conn = pyodbc.connect(connection_string)
@@ -1162,10 +1174,10 @@ class InventoryScreen(QtWidgets.QMainWindow):
 
     def updateItem(self):
       
-        selected_row = self.tableWidget.currentRow()
-        if selected_row == -1:
-            QtWidgets.QMessageBox.warning(self, "Selection Error", "Please select an item to update.")
+        selected_row = self.get_selected_row()
+        if selected_row is None:  # If nothing is selected, return
             return
+        
 
         # Gather data for the selected row
         item_data = {
@@ -1184,9 +1196,8 @@ class InventoryScreen(QtWidgets.QMainWindow):
 
     def deleteItem(self):
        
-        selected_row = self.tableWidget.currentRow()
-        if selected_row == -1:
-            QtWidgets.QMessageBox.warning(self, "Selection Error", "Please select an item to delete.")
+        selected_row = self.get_selected_row()
+        if selected_row is None:  # If nothing is selected, return
             return
 
         item_id = int(self.tableWidget.item(selected_row, 1).text())
@@ -1452,6 +1463,8 @@ class OrderScreen(QtWidgets.QMainWindow):
         self.showAllButton.clicked.connect(self.loadMenuItems)
         self.searchButton.clicked.connect(self.searchItems)
         self.checkOutButton.clicked.connect(self.goToCheckout)
+        self.pushButton.clicked.connect(self.goToOrderStatus)
+        self.removeItem.clicked.connect(self.removeFromCart)
     
 
         # Table Widgets Setup
@@ -1511,6 +1524,18 @@ class OrderScreen(QtWidgets.QMainWindow):
             
             self.cartItems.append((item_name, category, 1, price))  # Store cart data internally
 
+    def removeFromCart(self):
+        """Remove the selected item from the cart."""
+        selectedRow = self.cartTable.currentRow()
+        if selectedRow >= 0:  # Ensure a row is selected
+            # Remove the item from cartItems (internal data)
+            del self.cartItems[selectedRow]
+            
+            # Remove the row visually from the table
+            self.cartTable.removeRow(selectedRow)
+        else:
+            QtWidgets.QMessageBox.warning(self, "No Selection", "Please select an item to remove.")
+
     def populate_category_box(self):
         populate_category_query = "Select distinct Category from MenuItem"
         cursor.execute(populate_category_query)
@@ -1529,26 +1554,42 @@ class OrderScreen(QtWidgets.QMainWindow):
                 item = QTableWidgetItem(str(cell_data))
                 self.menuTable.setItem(row_index, col_index, item)
         self.menuTable.setHorizontalHeaderLabels(stringArray)
+
+    def goToOrderStatus(self):
+        """Navigate to the CheckoutScreenAdmin in read-only mode for order status."""
+        self.checkoutScreen = CheckoutScreenAdmin(self.userID, self.cartItems, read_only=True)
+        self.checkoutScreen.show()
+        self.close()
+
     def goToCheckout(self):
         """ Navigate to the second screen and pass cart details """
+        if not self.cartItems:  # Check if the cart is empty
+            QtWidgets.QMessageBox.warning(self, "Empty Cart", "Your cart is empty. Add items before proceeding to checkout.")
+            return
         self.checkoutScreen = CheckoutScreenAdmin(self.userID, self.cartItems)
         self.checkoutScreen.show()
         self.close()
 
 
 class CheckoutScreenAdmin(QtWidgets.QMainWindow):
-    def __init__(self, userID, cartItems):
+    def __init__(self, userID, cartItems, read_only=False):
         super(CheckoutScreenAdmin, self).__init__()
 
         # Load the second UI (Order_Management)
         uic.loadUi('ui_files/Order_Management.ui', self)
         self.userID = userID
         self.cartItems = cartItems
-
+        self.read_only = read_only
+        # Connect buttons to their respective methods
         self.placeOrderButton.clicked.connect(self.placeOrder)
+        self.cancelOrderButton.clicked.connect(self.cancelOrder)
+        self.viewStatusButton.clicked.connect(self.viewStatus)
         self.backButton.clicked.connect(self.goBack)
+        self.pushButton.clicked.connect(self.serveOrder)
 
         # Display selected items in the list widget
+        if self.read_only:
+            self.makeReadOnly()
         self.populateCartItems()
 
     def populateCartItems(self):
@@ -1556,6 +1597,15 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
         self.listWidget.clear()
         for item_name, category, quantity, price in self.cartItems:
             self.listWidget.addItem(f"{item_name} ({category}) x{quantity} - {price}")
+
+    def makeReadOnly(self):
+        """Disable non-order-status functionalities."""
+        self.placeOrderButton.setEnabled(False)
+        self.lineEdit.setEnabled(False)  # Table number
+        self.lineEdit_2.setEnabled(False)  # Special request
+        self.radioButton.setEnabled(False)  # Cash option
+        self.radioButton_2.setEnabled(False)  # Card option
+        self.listWidget.setEnabled(False)  # Cart items list
 
     def get_selected_items(self):
         """ Retrieve selected items (with their quantity) from the cartItems list """
@@ -1569,6 +1619,8 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
         table_number = self.lineEdit.text()
         special_request = self.lineEdit_2.text()
         payment_type = None
+
+        # Step 1: Check payment type
         if self.radioButton.isChecked():
             payment_type = 'Cash'
         elif self.radioButton_2.isChecked():
@@ -1577,37 +1629,52 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please select a payment type.")
             return
 
+        # Step 2: Validate table number input
         if not table_number.isdigit():
             QtWidgets.QMessageBox.warning(self, "Input Error", "Table number must be numeric.")
             return
 
-        # Step 1: Get selected items and calculate total amount
+        # Step 3: Retrieve selected items and calculate total amount
         selected_items = self.get_selected_items()  # Retrieve the selected items list
         total_amount = 0
         for item_name, quantity, price in selected_items:
             total_amount += int(price)  # Calculate total by summing item prices
 
-        # Step 2: Insert transaction with calculated amount
+        # Step 4: Apply tax based on payment type
+        if payment_type == 'Card':
+            tax_rate = 0.12  # 12% tax for card payments
+        else:  # 'Cash'
+            tax_rate = 0.15  # 15% tax for cash payments
+
+        tax_amount = total_amount * tax_rate
+        total_with_tax = total_amount + tax_amount
+
+        # Step 5: Insert transaction with calculated amount and tax
         try:
             conn = pyodbc.connect(connection_string)
             cursor = conn.cursor()
 
-            # Insert transaction into [Transaction] table
+            # Insert transaction into [Transaction] table with tax included
             cursor.execute("""
-                INSERT INTO [Transaction] (StaffID, PaymentType, Amount, Date, Time, Type, InventoryID)
+                INSERT INTO [Transaction] (StaffID, PaymentType, Amount, Tax, Date, Time, Type, InventoryID)
                 OUTPUT INSERTED.id
-                VALUES (?, ?, ?, CONVERT(date, GETDATE()), CONVERT(time, GETDATE()), 'Order', null);
-            """, (self.userID, payment_type, total_amount))
+                VALUES (?, ?, ?, ?, CONVERT(date, GETDATE()), CONVERT(time, GETDATE()), 'Order', 1);
+            """, (self.userID, payment_type, total_amount, tax_amount))  # Include tax_amount
             transaction_id = cursor.fetchone()[0]  # Get the transaction ID
 
-            # Step 3: Insert order into Orders table
+            # Step 6: Insert order into Orders table
             cursor.execute("""
                 INSERT INTO Orders (Table_no, StaffID, TransactionID, Special_Request, Status, Date, Time)
                 VALUES (?, ?, ?, ?, 'Preparing', CONVERT(date, GETDATE()), CONVERT(time, GETDATE()));
             """, (int(table_number), self.userID, transaction_id, special_request))
 
             conn.commit()
-            QtWidgets.QMessageBox.information(self, "Order Placed", "Your order has been placed!")
+
+            # Step 7: Show success message with total amount (including tax)
+            QtWidgets.QMessageBox.information(self, 
+                "Order Placed", 
+                f"Your order has been placed!\nTotal Amount (including tax): ${total_with_tax:.2f}\nTax: ${tax_amount:.2f}"
+            )
             self.close()
 
         except pyodbc.Error as e:
@@ -1615,11 +1682,104 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
         finally:
             conn.close()
 
+
+    def cancelOrder(self):
+        """ Cancel an order based on Order ID input """
+        order_id = self.lineEdit_3.text().strip()
+        if not order_id.isdigit():
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Order ID must be numeric.")
+            return
+
+        try:
+            conn = pyodbc.connect(connection_string)
+            cursor = conn.cursor()
+
+            # Check if the order exists and can be canceled
+            cursor.execute("SELECT TransactionID, Status FROM Orders WHERE id = ?", (int(order_id),))
+            result = cursor.fetchone()
+
+            if result:
+                transaction_id, status = result
+                if status == 'Preparing':
+                    cursor.execute("UPDATE Orders SET TransactionID = NULL, Status = 'Cancelled' WHERE id = ?", (int(order_id),))
+                    cursor.execute("DELETE FROM [Transaction] WHERE id = ?", (transaction_id,))
+                    conn.commit()
+                    QtWidgets.QMessageBox.information(self, "Order Cancelled", "The order has been successfully cancelled.")
+                else:
+                    QtWidgets.QMessageBox.warning(self, "Cannot Cancel", "Served/Cancelled orders cannot be cancelled.")
+            else:
+                QtWidgets.QMessageBox.warning(self, "Order Not Found", "No order found with the provided ID.")
+        except pyodbc.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
+    def viewStatus(self):
+        """ View the status of an order based on Order ID """
+        order_id = self.lineEdit_3.text().strip()
+        if not order_id.isdigit():
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Order ID must be numeric.")
+            return
+
+        try:
+            conn = pyodbc.connect(connection_string)
+            cursor = conn.cursor()
+
+            # Retrieve the status of the specified order
+            cursor.execute("SELECT Status FROM Orders WHERE id = ?", (int(order_id),))
+            result = cursor.fetchone()
+
+            if result:
+                QtWidgets.QMessageBox.information(self, "Order Status", f"The status of your order is: {result[0]}")
+            else:
+                QtWidgets.QMessageBox.warning(self, "Order Not Found", "No order found with the provided ID.")
+        except pyodbc.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
+    def serveOrder(self):
+        """ Mark an order as served by updating its status """
+        order_id = self.lineEdit_3.text().strip()
+        if not order_id.isdigit():
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Order ID must be numeric.")
+            return
+
+        try:
+            conn = pyodbc.connect(connection_string)
+            cursor = conn.cursor()
+
+            # Step 1: Check if the order exists and fetch its current status
+            cursor.execute("SELECT Status FROM Orders WHERE id = ?", (int(order_id),))
+            result = cursor.fetchone()
+
+            if result:
+                status = result[0]
+                if status == 'Preparing':
+                    # Step 2: Update the status to 'Served'
+                    cursor.execute("UPDATE Orders SET Status = 'Served' WHERE id = ?", (int(order_id),))
+                    conn.commit()
+                    QtWidgets.QMessageBox.information(self, "Order Served", "The order status has been Served.")
+                elif status == 'Served':
+                    QtWidgets.QMessageBox.information(self, "Already Served", "The order is already marked as 'Served'.")
+                elif status == 'Cancelled':
+                    QtWidgets.QMessageBox.warning(self, "Cannot Serve", "Cancelled Order.")
+                else:
+                    QtWidgets.QMessageBox.warning(self, "Invalid Status", f"Order cannot be served. Current status: {status}")
+            else:
+                QtWidgets.QMessageBox.warning(self, "Order Not Found", "No order found with the provided ID.")
+        except pyodbc.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
+
     def goBack(self):
         """ Return to the order selection screen """
         self.previousScreen = OrderScreen(self.userID)
         self.previousScreen.show()
         self.close()
+
 
 
 

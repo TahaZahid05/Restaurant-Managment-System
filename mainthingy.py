@@ -167,6 +167,17 @@ class registerUser(QtWidgets.QMainWindow):
                     break
             if (checkFlag):
                 if(self.roleSelect.currentText() == "Staff"):
+                    # insert_query = """
+                    #     INSERT INTO Staff
+                    #     ([RestaurantID],[Full_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary],[Emergency_Contact],Status,[ownerID],[Joining_Date])
+                    #     VALUES (1,?,?,?,?,?,?,?,?,?,?,?,?,GETDATE())
+                    # """
+                    # data = (
+                    #     self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text(),self.roleBox.currentText(),self.salaryLine.text(),self.phoneLine_2.text(),"Working",6
+                    # )
+                    # print("yes")
+                    # cursor.execute(insert_query,data)
+                    # print("no")
                     insert_query = """
                         INSERT INTO Staff
                         ([RestaurantID],[Full_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary],[Emergency_Contact],Status,[ownerID],[Joining_Date])
@@ -532,6 +543,11 @@ class checkOutScreen(QtWidgets.QMainWindow):
         self.cvcNumber.setEnabled(False)
         self.expiryDate.setEnabled(False)
         self.cardHolderName.setEnabled(False)
+        self.lineEdit.setEnabled(False)
+        self.lineEdit_2.setEnabled(False)
+        self.lineEdit_3.setEnabled(False)
+        self.lineEdit_4.setEnabled(False)
+
 
 
         self.cartTable = cartTable

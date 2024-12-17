@@ -8,8 +8,8 @@ from PyQt6.QtGui import QIntValidator
 import pyodbc
 import math
 
-server = 'TAHA\\SQLSERVER1'
-database = 'Project2'  # Name of your Northwind database
+server = 'DESKTOP-BY-ABD'
+database = 'RMS'  # Name of your Northwind database
 connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
 
 # Establish a connection to the database
@@ -31,8 +31,6 @@ class UI(QtWidgets.QMainWindow):
         self.loginButton.clicked.connect(self.login)
         self.guestLoginButton.clicked.connect(self.guestLogin)
         self.exitButton.clicked.connect(self.exitLogin)
-
-        self.userPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
 
     def register(self):
         self.register_user = registerUser()
@@ -60,8 +58,48 @@ class UI(QtWidgets.QMainWindow):
             dlg = QtWidgets.QMessageBox.warning(self,"Login Failure","No account with the following email address and password exist!",QtWidgets.QMessageBox.StandardButton.Ok)
 
     def guestLogin(self):
-        self.guest_user_screen = GuestScreen()
-        self.guest_user_screen.show()
+        """ Handle guest login and create a new Customer table entry """
+        try:
+            # Connect to the database
+            conn = pyodbc.connect(connection_string)
+            cursor = conn.cursor()
+
+            # Step 1: Insert a new entry into the Customer table with 'Guest' as the name
+            cursor.execute("""
+                INSERT INTO Customer ([First_Name])
+                OUTPUT INSERTED.ID
+                VALUES ('Guest')
+            """)
+
+            # Retrieve the generated CustomerID
+            new_customer_id = cursor.fetchone()[0]
+            conn.commit()
+
+            QtWidgets.QMessageBox.information(
+                self,
+                "Guest Login",
+                f"Guest login successful. Please note, You will not be able to login with the same guest id again. Customer ID: {new_customer_id}"
+            )
+
+            # Step 2: Show the GuestScreen
+            self.guest_user_screen = GuestScreen(new_customer_id)  # Pass new ID to the guest screen
+            self.guest_user_screen.show()
+
+            
+
+        except pyodbc.Error as e:
+            # Handle any database errors
+            QtWidgets.QMessageBox.critical(
+                self,
+                "Database Error",
+                f"An error occurred while creating the guest entry: {e}"
+            )
+        finally:
+            # Always close the database connection
+            if conn:
+                conn.close()
+
+
 
     def exitLogin(self):
         self.close()
@@ -76,8 +114,6 @@ class registerUser(QtWidgets.QMainWindow):
         uic.loadUi('ui_files/User_Registration.ui', self)
         self.salaryLine.setEnabled(False)
         self.roleBox.setEnabled(False)
-        self.phoneLine_2.setEnabled(False)
-        self.salaryLine_2.setEnabled(False)
         self.roleSelect.currentIndexChanged.connect(self.isStaff)
         self.returnLoginButton.clicked.connect(self.closeScreen)
         self.registerButton.clicked.connect(self.registering)
@@ -90,24 +126,18 @@ class registerUser(QtWidgets.QMainWindow):
         if(i == 0):
             self.salaryLine.setEnabled(False)
             self.roleBox.setEnabled(False)
-            self.phoneLine_2.setEnabled(False)
-            self.salaryLine_2.setEnabled(False)
         else:
             self.salaryLine.setEnabled(True)
             self.roleBox.setEnabled(True)
             self.roleBox.addItems(["Manager","Chef","Waiter","Host","Sous Chef"])
-            self.phoneLine_2.setEnabled(True)
-            self.salaryLine_2.setEnabled(True)
     
     def registering(self):
-        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == "" or self.addressBox.toPlainText() == "" or self.phoneLine.text() == "" or (self.salaryLine.text() == "" and self.phoneLine_2.text() == "" and self.salaryLine_2.text() == "" and self.roleSelect.currentText() == "Staff")):
+        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == "" or self.addressBox.toPlainText() == "" or self.phoneLine.text() == "" or (self.salaryLine.text() == "" and self.roleSelect.currentText() == "Staff")):
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to register!",QtWidgets.QMessageBox.StandardButton.Ok)
         elif (not(validate_email(self.emailAddress.text()))):
             dlg = QtWidgets.QMessageBox.warning(self,"Invalid Email Address","Email address is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
         elif (self.userPass.text() != self.passConfirm.text()):
             dlg = QtWidgets.QMessageBox.warning(self,"Password Confirmation Failure","Confirm Password doesn't have the same password!",QtWidgets.QMessageBox.StandardButton.Ok)
-        elif (self.roleSelect.currentText() == "Staff" and self.salaryLine_2.text() != "ABCDE"):
-            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Code","Code is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
         else:
             checking_query_customer = "Select Email, username from Customer"
             checking_query_staff = "Select Email, username from Staff"
@@ -138,34 +168,23 @@ class registerUser(QtWidgets.QMainWindow):
                 if(self.roleSelect.currentText() == "Staff"):
                     insert_query = """
                         INSERT INTO Staff
-                        ([RestaurantID],[Full_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary],[Emergency_Contact],Status,[ownerID],[Joining_Date])
-                        VALUES (1,?,?,?,?,?,?,?,?,?,?,?,?,GETDATE())
+                        ([First_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary])
+                        VALUES (?,?,?,?,?,?,?,?,?)
                     """
                     data = (
-                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text(),self.roleBox.currentText(),self.salaryLine.text(),self.phoneLine_2.text(),"Working",6
+                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text(),self.roleBox.currentText(),self.salaryLine.text()
                     )
                     cursor.execute(insert_query,data)
                 else:
-                    insert_query_customer = """
+                    insert_query = """
                         INSERT INTO Customer
-                        ([Restaurant_id],[First_name],[Last_name],[Email],[username],[password],[Phone_number])
-                        OUTPUT INSERTED.id
-                        VALUES (1,?,?,?,?,?,?)
-                        
+                        ([First_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_number])
+                        VALUES (?,?,?,?,?,?,?)
                     """
                     data = (
-                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.phoneLine.text()
+                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text()
                     )
-                    print(data)
-                    cursor.execute(insert_query_customer,data)
-                    insert_address_query = """
-                        INSERT INTO Customer_Address
-                        ([id],[Address])
-                        VALUES (?,?)
-                    """
-                    data = (cursor.fetchone()[0],self.addressBox.toPlainText())
-                    cursor.execute(insert_address_query,data)
-
+                    cursor.execute(insert_query,data)
                 connection.commit()
                 self.firstName.clear()
                 self.lastName.clear()
@@ -235,52 +254,25 @@ class editProfileScreen(QtWidgets.QMainWindow):
         uic.loadUi('ui_files/EditProfile.ui', self)
 
         self.userID = userID
-        self.userPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
-        self.newPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
-        self.confirmPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+
         self.load_user_details()
 
         self.newAddressButton.clicked.connect(self.newAddress)
         self.applyButton.clicked.connect(self.applyChanges)
         self.deleteAddressButton.clicked.connect(self.deleteAddress)
         self.backButton.clicked.connect(self.back)
-        self.changePassButton.clicked.connect(self.changePassword)
-
-
-    def changePassword(self):
-        verify_password_query = "Select Password from Customer where id = ?"
-        cursor.execute(verify_password_query,(self.userID))
-        if(cursor.fetchone()[0] != self.userPass.text()):
-            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Password","Password is incorrect!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        else:
-            if(self.newPass.text() == "" or self.confirmPass.text() == ""):
-                dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to change password!",QtWidgets.QMessageBox.StandardButton.Ok)
-                return
-            elif(self.newPass.text() != self.confirmPass.text()):
-                dlg = QtWidgets.QMessageBox.warning(self,"Password Confirmation Failure","Confirm Password doesn't have the same password!",QtWidgets.QMessageBox.StandardButton.Ok)
-                return
-            update_query = """
-                UPDATE Customer
-                SET password = ?
-                WHERE id = ?
-            """
-            data = (self.newPass.text(),self.userID)
-            cursor.execute(update_query,data)
-            connection.commit()
-            dlg = QtWidgets.QMessageBox.information(self,"Password Changed","Password was successfully changed!",QtWidgets.QMessageBox.StandardButton.Ok)
 
     def load_user_details(self):
-        autofill_query = "Select First_name, Last_name, Email, username, Phone_number from Customer where id = ?"
+        autofill_query = "Select First_name, Last_name, Email, username, password, Phone_number from Customer where id = ?"
         cursor.execute(autofill_query,(self.userID))
         for row in cursor.fetchall():
             self.firstName.setText(row[0])
             self.lastName.setText(row[1])
             self.emailAddress.setText(row[2])
             self.userName.setText(row[3])
-            # self.userPass.setText(row[4])
-            # self.passConfirm.setText(row[4])
-            self.phoneNum.setText(row[4])
+            self.userPass.setText(row[4])
+            self.passConfirm.setText(row[4])
+            self.phoneNum.setText(row[5])
 
         autofill_address_query = "Select Address from Customer_Address where id = ?"
         cursor.execute(autofill_address_query,(self.userID))
@@ -295,29 +287,19 @@ class editProfileScreen(QtWidgets.QMainWindow):
         self.newAddress_screen.show()
 
     def applyChanges(self):
-        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.phoneNum.text() == ""):
+        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == "" or self.phoneNum.text() == ""):
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to apply changes!",QtWidgets.QMessageBox.StandardButton.Ok)
         elif (not(validate_email(self.emailAddress.text()))):
             dlg = QtWidgets.QMessageBox.warning(self,"Invalid Email Address","Email address is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
+        elif (self.userPass.text() != self.passConfirm.text()):
+            dlg = QtWidgets.QMessageBox.warning(self,"Password Confirmation Failure","Confirm Password doesn't have the same password!",QtWidgets.QMessageBox.StandardButton.Ok)
         else:
-            verify_query = "Select Email, username from Customer where id <> ?"
-            cursor.execute(verify_query,(self.userID))
-            for row in cursor.fetchall():
-                if (self.emailAddress.text() == row[0]):
-                    dlg = QtWidgets.QMessageBox.warning(self,"Email Address Already Exists","This email is already used to make an account!",QtWidgets.QMessageBox.StandardButton.Ok)
-                    return
-                elif (self.userName.text() == row[1]):
-                    dlg = QtWidgets.QMessageBox.warning(self,"User Already Exists","The username is already used to make an account!",QtWidgets.QMessageBox.StandardButton.Ok)
-                    return
-            
-
-
             update_query = """
                 UPDATE Customer
-                SET First_name = ?, Last_name = ?, Email = ?, username = ?, Phone_number = ?
+                SET First_name = ?, Last_name = ?, Email = ?, username = ?, Password = ?, Phone_number = ?
                 WHERE id = ?
             """
-            data = (self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.phoneNum.text(),self.userID)
+            data = (self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.phoneNum.text(),self.userID)
             cursor.execute(update_query,data)
             connection.commit()
             dlg = QtWidgets.QMessageBox.information(self,"Changes Applied","Account was successfully updated!",QtWidgets.QMessageBox.StandardButton.Ok)
@@ -336,20 +318,21 @@ class editProfileScreen(QtWidgets.QMainWindow):
         self.close()
 
 class GuestScreen(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, userID):
         super(GuestScreen, self).__init__()
 
+        self.userID = userID
         uic.loadUi('ui_files/GuestScreen.ui', self)
 
         self.onlineOrderButton.clicked.connect(self.onlineOrderScreen)
         self.trackOrderButton.clicked.connect(self.trackOrder)
 
     def onlineOrderScreen(self):
-        self.online_order_screen = onlineOrder()
+        self.online_order_screen = onlineOrder(self.userID)
         self.online_order_screen.show()
 
     def trackOrder(self):
-        self.trackorder_screen = trackOrderScreen()
+        self.trackorder_screen = trackOrderScreen(self.userID)
         self.trackorder_screen.show()
 
 
@@ -390,7 +373,7 @@ class onlineOrder(QtWidgets.QMainWindow):
     def __init__(self, userID):
         super(onlineOrder, self).__init__()
 
-        uic.loadUi('ui_files/Order_ItemSelect_Customer.ui', self)
+        uic.loadUi('ui_files/Order_ItemSelect.ui', self)
 
         self.userID = userID
 
@@ -409,12 +392,7 @@ class onlineOrder(QtWidgets.QMainWindow):
         if (self.cartTable.selectedItems() == []):
             dlg = QtWidgets.QMessageBox.warning(self,"No Item Selected","Select an item to remove from cart!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
-        quantity = int(self.cartTable.item(selected_item, 2).text())
-        if(quantity == 1):
-            self.cartTable.removeRow(selected_item)
-        else:
-            self.cartTable.item(selected_item, 2).setText(str(quantity-1))
-            self.cartTable.item(selected_item, 4).setText(str((quantity-1) * float(self.cartTable.item(selected_item, 3).text())))
+        self.cartTable.removeRow(selected_item)
 
     def populate_menu_table(self):
         column_names = ["Name","Category","Price"]
@@ -684,8 +662,8 @@ class seatReserve(QtWidgets.QMainWindow):
         if(self.reservationComboBox.currentText() == ""):
             dlg = QtWidgets.QMessageBox.warning(self,"No Reservation Selected","Select a reservation to cancel!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
-        update_query = "Update Reservations set Status = 'Cancelled' where id = ?"
-        cursor.execute(update_query,(self.reservationComboBox.currentText()))
+        cancel_query = "Delete from Reservations where id = ?"
+        cursor.execute(cancel_query,(self.reservationComboBox.currentText()))
         connection.commit()
         self.reservationComboBox.removeItem(self.reservationComboBox.currentIndex())
         dlg = QtWidgets.QMessageBox.information(self,"Reservation Cancelled","Reservation was successfully cancelled!",QtWidgets.QMessageBox.StandardButton.Ok)
@@ -958,75 +936,36 @@ class adminScreen(QtWidgets.QMainWindow):
         self.backButton.clicked.connect(self.back)
 
     def billGeneration(self):
-        checking_query = "Select Position from Staff where id = ?"
-        print(self.userID)
-        cursor.execute(checking_query,(int(self.userID)))
-        position = cursor.fetchone()[0]
-        if (position == "Chef" or position == "Host" or position == "Sous Chef"):
-            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        else:
-            self.bill_screen = billScreen()
-            self.bill_screen.show()
+        self.bill_screen = billScreen()
+        self.bill_screen.show()
 
     def viewFeedback(self):
         self.feedback_screen = FeedbackScreen()
         self.feedback_screen.show()
 
     def showInventory(self):
-        checking_query = "Select Position from Staff where id = ?"
-        cursor.execute(checking_query,(self.userID))
-        position = cursor.fetchone()[0]
-        if(position == "Waiter" or position == "Host"):
-            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
         self.inventory_screen = InventoryScreen(self.userID)
         self.inventory_screen.show()
 
     def showMenu(self):
-        checking_query = "Select Position from Staff where id = ?"
-        cursor.execute(checking_query,(self.userID))
-        position = cursor.fetchone()[0]
-        if(position == "Waiter" or position == "Host"):
-            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
         self.menu_screen = MenuScreen()
         self.menu_screen.show()
 
     def showOrder(self):
-        checking_query = "Select Position from Staff where id = ?"
-        cursor.execute(checking_query,(self.userID))
-        position = cursor.fetchone()[0]
-        if (position == "Host"):
-            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
         self.order_screen = OrderScreen(self.userID)
         self.order_screen.show()
 
     def showTransaction(self):
-        checking_query = "Select Position from Staff where id = ?"
-        cursor.execute(checking_query,(self.userID))
-        position = cursor.fetchone()[0]
-        if (position == "CEO"):
-            self.transaction_screen = TransactionScreen(self.userID)
-            self.transaction_screen.show()
-        else:
-            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
-
+        self.transaction_screen = TransactionScreen(self.userID)
+        self.transaction_screen.show()
 
     def showReservations(self):
         self.reservation_screen = ReservationScreen()
         self.reservation_screen.show()
 
     def showStaff(self):
-        checking_query = "Select Position from Staff where id = ?"
-        cursor.execute(checking_query,(self.userID))
-        poistion = cursor.fetchone()[0]
-        if(poistion == "CEO"):
-            self.staff_screen = StaffScreen()
-            self.staff_screen.show()
-        else:
-            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
+        self.staff_screen = StaffScreen()
+        self.staff_screen.show()
 
     def back(self):
         self.close()
@@ -1465,7 +1404,8 @@ class UpdateItemScreen(QtWidgets.QMainWindow):
     def back(self):
         """Close the Update Item screen."""
         self.close()
-      
+
+        
 class MenuScreen(QtWidgets.QMainWindow): # DONE #
     def __init__(self):
         super(MenuScreen, self).__init__()
@@ -1596,18 +1536,14 @@ class OrderScreen(QtWidgets.QMainWindow):
         self.checkOutButton.clicked.connect(self.goToCheckout)
         self.pushButton.clicked.connect(self.goToOrderStatus)
         self.removeItem.clicked.connect(self.removeFromCart)
-        self.backButton.clicked.connect(self.goBack)
     
 
         # Table Widgets Setup
         self.menuTable.setColumnCount(3)  # Adjusted to 3 columns
         self.menuTable.setHorizontalHeaderLabels(["Item Name", "Category", "Price"])  
         
-        self.cartTable.setColumnCount(5)
-        self.cartTable.setHorizontalHeaderLabels(["Item Name", "Category", "Quantity", "Unit Price", "Total Price"])
-
-    def goBack(self):
-        self.close()
+        self.cartTable.setColumnCount(4)
+        self.cartTable.setHorizontalHeaderLabels(["Item Name", "Category", "Quantity", "Unit Price"])
 
     def loadMenuItems(self):
         """ Load all menu items into the menu table """
@@ -1637,32 +1573,27 @@ class OrderScreen(QtWidgets.QMainWindow):
             conn.close()
 
     def addToCart(self):
-        selected_row = self.menuTable.currentRow()
-        if self.menuTable.selectedItems() == []:
-            dlg = QtWidgets.QMessageBox.warning(self,"No Item Selected","Select an item to add to cart!",QtWidgets.QMessageBox.StandardButton.Ok)
+        """ Add selected items from the menu table to the cart """
+        selected_rows = self.menuTable.selectionModel().selectedRows()
+        
+        if not selected_rows:
+            QtWidgets.QMessageBox.warning(self, "Selection Error", "Please select at least one item to add to cart.")
             return
-        item_name = self.menuTable.item(selected_row, 0).text()
-        item_category = self.menuTable.item(selected_row, 1).text()
-        item_price = self.menuTable.item(selected_row, 2).text()
-        print(item_name, item_category, item_price)
-        for i in range(self.cartTable.rowCount()):
-            print(self.cartTable.item(i, 0).text())
-            print(self.cartTable.item(i, 1).text())
-            print(self.cartTable.item(i, 3).text())
-            if self.cartTable.item(i, 0).text() == item_name and self.cartTable.item(i, 1).text() == item_category and self.cartTable.item(i, 3).text() == item_price:
-                self.cartTable.item(i, 2).setText(str(int(self.cartTable.item(i, 2).text()) + 1))
-                self.cartTable.item(i, 4).setText(str(int(self.cartTable.item(i, 2).text()) * float(item_price)))
-                for i in range(len(self.cartItems)):
-                    if self.cartItems[i][0] == item_name and self.cartItems[i][1] == item_category and self.cartItems[i][3] == item_price:
-                        self.cartItems[i] = (item_name, item_category, int(self.cartTable.item(i, 2).text()), item_price)
-                return
-        self.cartTable.insertRow(self.cartTable.rowCount())
-        self.cartTable.setItem(self.cartTable.rowCount()-1, 0, QTableWidgetItem(str(item_name)))
-        self.cartTable.setItem(self.cartTable.rowCount()-1, 1, QTableWidgetItem(str(item_category)))
-        self.cartTable.setItem(self.cartTable.rowCount()-1, 2, QTableWidgetItem(str("1"))) 
-        self.cartTable.setItem(self.cartTable.rowCount()-1, 3, QTableWidgetItem(str(item_price)))
-        self.cartTable.setItem(self.cartTable.rowCount()-1, 4, QTableWidgetItem(str(item_price)))
-        self.cartItems.append((item_name, item_category, 1, item_price))  # Store cart data internally
+        
+        for row in selected_rows:
+            item_name = self.menuTable.item(row.row(), 0).text()
+            category = self.menuTable.item(row.row(), 1).text()
+            price = self.menuTable.item(row.row(), 2).text()
+
+            # Add to cart table
+            row_idx = self.cartTable.rowCount()
+            self.cartTable.insertRow(row_idx)
+            self.cartTable.setItem(row_idx, 0, QtWidgets.QTableWidgetItem(item_name))
+            self.cartTable.setItem(row_idx, 1, QtWidgets.QTableWidgetItem(category))
+            self.cartTable.setItem(row_idx, 2, QtWidgets.QTableWidgetItem("1"))  # Default quantity
+            self.cartTable.setItem(row_idx, 3, QtWidgets.QTableWidgetItem(price))
+            
+            self.cartItems.append((item_name, category, 1, price))  # Store cart data internally
 
     def removeFromCart(self):
         """Remove the selected item from the cart."""
@@ -1709,6 +1640,7 @@ class OrderScreen(QtWidgets.QMainWindow):
         self.checkoutScreen = CheckoutScreenAdmin(self.userID, self.cartItems)
         self.checkoutScreen.show()
         self.close()
+
 
 class CheckoutScreenAdmin(QtWidgets.QMainWindow):
     def __init__(self, userID, cartItems, read_only=False):
@@ -1777,7 +1709,7 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
         selected_items = self.get_selected_items()  # Retrieve the selected items list
         total_amount = 0
         for item_name, quantity, price in selected_items:
-            total_amount += (int(price)*int(quantity))  # Calculate total by summing item prices
+            total_amount += int(price)  # Calculate total by summing item prices
 
         # Step 4: Apply tax based on payment type
         if payment_type == 'Card':
@@ -1798,7 +1730,7 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
                 INSERT INTO [Transaction] (StaffID, PaymentType, Amount, Tax, Date, Time, Type, InventoryID)
                 OUTPUT INSERTED.id
                 VALUES (?, ?, ?, ?, CONVERT(date, GETDATE()), CONVERT(time, GETDATE()), 'Order', 1);
-            """, (self.userID, payment_type, total_amount, tax_rate*100))  # Include tax_amount
+            """, (self.userID, payment_type, total_amount, tax_amount))  # Include tax_amount
             transaction_id = cursor.fetchone()[0]  # Get the transaction ID
 
             # Step 6: Insert order into Orders table
@@ -1919,6 +1851,9 @@ class CheckoutScreenAdmin(QtWidgets.QMainWindow):
         self.previousScreen.show()
         self.close()
 
+
+
+
 class TransactionScreen(QtWidgets.QMainWindow):
     def __init__(self, staff_id):
         self.userID = staff_id
@@ -1998,58 +1933,8 @@ class ReservationScreen(QtWidgets.QMainWindow):
         uic.loadUi('ui_files/Reservation_Form_View.ui', self)
 
         self.backButton.clicked.connect(self.back)
-        self.upcomingButton.clicked.connect(self.showUpcomingReservations)
-        self.allButton.clicked.connect(self.showAllReservations)
 
         # Load reservation data when the screen is initialized
-        self.loadReservationData()
-
-    def showUpcomingReservations(self):
-        """Show only upcoming reservations."""
-        """Fetch reservation details and populate the table."""
-        conn = pyodbc.connect(connection_string)  # Replace with your connection string
-        cursor = conn.cursor()
-
-        try:
-            query = """
-                SELECT 
-                    r.id,
-                    r.CustomerID,
-                    concat(first_name, last_name),
-                    r.Date,
-                    r.Time,
-                    r.Party_Size,
-                    r.status
-                FROM 
-                    reservations r
-                JOIN 
-                    Customer c
-                ON 
-                    r.CustomerID = c.id
-                WHERE
-                    r.Date >= GETDATE();
-            """
-
-            cursor.execute(query)
-            rows = cursor.fetchall()
-
-            # Populate the table with fetched data
-            self.reservationTable.setRowCount(0)  # Clear existing rows
-
-            for row_index, row_data in enumerate(rows):
-                self.reservationTable.insertRow(row_index)
-                for col_index, value in enumerate(row_data):
-                    item = QtWidgets.QTableWidgetItem(str(value))
-                    self.reservationTable.setItem(row_index, col_index, item)
-
-        except pyodbc.Error as e:
-            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred: {e}")
-
-        finally:
-            conn.close()
-
-    def showAllReservations(self):
-        """Show all reservations."""
         self.loadReservationData()
 
     def loadReservationData(self):
@@ -2097,272 +1982,62 @@ class ReservationScreen(QtWidgets.QMainWindow):
         """Close the reservation screen."""
         self.close()
 
+
 class StaffScreen(QtWidgets.QMainWindow):
     def __init__(self):
         super(StaffScreen, self).__init__()
 
         uic.loadUi('ui_files/staffManagment.ui', self)
 
-        self.populate_table()
-
         self.addButton.clicked.connect(self.add)
         self.updateButton.clicked.connect(self.update)
         self.deleteButton.clicked.connect(self.delete)
         self.backButton.clicked.connect(self.back)
 
-    def populate_table(self):
-        populate_query = """
-            SELECT id, CONCAT(Full_Name, ' ', Last_Name) AS Name, Position, Phone_Number, Email, Address, Joining_Date, Salary, Emergency_Contact, Status
-            FROM Staff;
-        """
-        cursor.execute(populate_query)
-        data = cursor.fetchall()
-
-        self.tableWidget.setRowCount(len(data))
-        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
-
-        for i, row in enumerate(data):
-            for j, value in enumerate(row):
-                item = QtWidgets.QTableWidgetItem(str(value))
-                item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
-                self.tableWidget.setItem(i, j, item)
-
     def add(self):
-        self.add_screen = StaffAddScreen(self)
+        self.add_screen = StaffAddScreen()
         self.add_screen.show()
 
-    def getSelectedRowValues(self):
-        selected_row = self.tableWidget.currentRow()
-        row_values = []
-        for col in range(self.tableWidget.columnCount()):
-            item = self.tableWidget.item(selected_row, col)
-            if item is not None:
-                row_values.append(item.text())
-        return row_values
-    
     def update(self):
-        if self.tableWidget.selectedItems() != []:  # Check if a row is selected
-            selected_rows = self.getSelectedRowValues()
-            self.update_screen = StaffUpdateScreen(selected_rows, self)
-            self.update_screen.show()
-        else:
-            QMessageBox.warning(self, "Error", "Please select a staff member to update.")
-
-    def confirm_deletion(self):
-        # Create a QMessageBox instance
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle("Staff Deletion")
-        msg_box.setText("Are you sure you want to delete the staff records?")
-        
-        # Add custom buttons
-        delete_button = msg_box.addButton("Delete Records", QMessageBox.ButtonRole.AcceptRole)
-        keep_button = msg_box.addButton("Keep Records", QMessageBox.ButtonRole.RejectRole)
-
-        # Execute and check which button was pressed
-        msg_box.exec()
-
-        if msg_box.clickedButton() == delete_button:
-            return True
-        
-        elif msg_box.clickedButton() == keep_button:
-            return False
+        self.update_screen = StaffUpdateScreen()
+        self.update_screen.show()
 
     def delete(self):
-        if self.tableWidget.selectedItems() != []:  # Check if a row is selected
-            selected_rows = self.getSelectedRowValues()
-            confirm = self.confirm_deletion()
-            if confirm:
-                update_query = """
-                    UPDATE Orders
-                    SET StaffID = NULL
-                    WHERE StaffID = ?;
-                """
-                cursor.execute(update_query, (selected_rows[0]))
-                # connection.commit()
-                update_query = """
-                    UPDATE [Transaction]
-                    SET StaffID = NULL
-                    WHERE StaffID = ?;
-                """
-                cursor.execute(update_query, (selected_rows[0]))
-                # connection.commit()
-                update_query = """
-                    UPDATE MenuItem
-                    SET StaffID = NULL
-                    WHERE StaffID = ?;
-                """
-                cursor.execute(update_query, (selected_rows[0]))
-                # connection.commit()
-                update_query = """
-                    UPDATE Ingredients
-                    SET CheckerStaffID = NULL
-                    WHERE CheckerStaffID = ?;
-                """
-                cursor.execute(update_query, (selected_rows[0]))
-                # connection.commit()
-                delete_query = "DELETE FROM Staff WHERE id = ?"
-                cursor.execute(delete_query, (selected_rows[0]))
-                connection.commit()
-                self.populate_table()
-                dlg = QtWidgets.QMessageBox.information(self,"Staff Deleted","Staff successfully deleted!",QtWidgets.QMessageBox.StandardButton.Ok)
-            else:
-                query = "UPDATE Staff SET Status = 'Terminated' WHERE id = ?"
-                cursor.execute(query, (selected_rows[0]))
-                connection.commit()
-                self.populate_table()
-                dlg = QtWidgets.QMessageBox.information(self,"Staff Terminated","Staff successfully terminated!",QtWidgets.QMessageBox.StandardButton.Ok)
-        else:
-            QMessageBox.warning(self, "Error", "Please select a staff member to remove.")
+        dlg = QtWidgets.QMessageBox.information(self,"Staff deleted","Staff successfully deleted!",QtWidgets.QMessageBox.StandardButton.Ok)
 
     def back(self):
         self.close()
 
 class StaffAddScreen(QtWidgets.QMainWindow):
-    def __init__(self, staff):
+    def __init__(self):
         super(StaffAddScreen, self).__init__()
 
         uic.loadUi('ui_files/StaffAdd.ui', self)
-
-        self.staffscreen = staff
 
         self.addStaffButton.clicked.connect(self.addStaff)
         self.backButton.clicked.connect(self.back)
 
     def addStaff(self):
-        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.lineEdit_10.text() == "" or self.dateEdit.text() == "":
-            dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields","Fill all fields to add an employee!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        elif self.dateEdit.date() > QDate.currentDate():
-            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Date","Invalid date!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        
-        fname = self.lineEdit_7.text()
-        lname = self.lineEdit_3.text()
-        position = self.lineEdit_4.text()
-        phone = self.lineEdit_5.text()
-        try:
-            phone = int(phone)
-        except ValueError:
-            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Phone number should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        
-        email = self.lineEdit_6.text()
-        address = self.lineEdit.text()
-        emergency_contact = self.lineEdit_10.text()
-        try:
-            emergency_contact = int(emergency_contact)
-        except ValueError:
-            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Emergency contact should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        
-        joining_date = self.dateEdit.date().toString("yyyy-MM-dd")
-        salary = self.lineEdit_2.text()
-        try:
-            salary = int(salary)
-        except ValueError:
-            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Salary should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        
-        username = self.lineEdit_8.text()
-        password = self.lineEdit_9.text()
-            
-        insert_query = """
-            INSERT INTO Staff (Full_Name, Last_Name, Position, Phone_Number, Email, username, Password, Address, Emergency_Contact, Joining_Date, Salary, Status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Working')
-        """
-        cursor.execute(insert_query, (fname, lname, position, phone, email, username, password, address, emergency_contact, joining_date, salary))
-        connection.commit()
-
         dlg = QtWidgets.QMessageBox.information(self,"Staff added","Staff successfully added!",QtWidgets.QMessageBox.StandardButton.Ok)
-        self.staffscreen.populate_table()
-        self.back()
 
     def back(self):
         self.close()
 
 class StaffUpdateScreen(QtWidgets.QMainWindow):
-    def __init__(self, data, staff):
+    def __init__(self):
         super(StaffUpdateScreen, self).__init__()
 
         uic.loadUi('ui_files/StaffUpdate.ui', self)
-
-        self.staffscreen = staff
-
-        self.lineEdit_7.setText(data[0])
-        self.lineEdit_7.setReadOnly(True)
-        self.lineEdit_3.setText(data[1])
-        self.lineEdit_3.setReadOnly(True)
-        self.lineEdit_4.setText(data[2])
-        self.lineEdit_5.setText(data[3])
-        self.lineEdit_6.setText(data[4])
-        self.lineEdit.setText(data[5])
-        self.dateEdit.setDate(QDate.fromString(data[6], "yyyy-MM-dd"))
-        self.lineEdit_2.setText(data[7])
-        self.lineEdit_10.setText(data[8])
-        self.lineEdit_11.setText(data[9])
-
-        query = "SELECT username, Password FROM Staff WHERE id = ?"
-        cursor.execute(query, (data[0]))
-        username, password = cursor.fetchone()
-        self.lineEdit_8.setText(username)
-        self.lineEdit_9.setText(password)
 
         self.updateStaffButton.clicked.connect(self.updateStaff)
         self.backButton.clicked.connect(self.back)
 
     def updateStaff(self):
-
-        if self.lineEdit_3.text() == "" or self.lineEdit_4.text() == "" or self.lineEdit_5.text() == "" or self.lineEdit_6.text() == "" or self.lineEdit.text() == "" or self.lineEdit_2.text() == "" or self.lineEdit_7.text() == "" or self.lineEdit_8.text() == "" or self.lineEdit_9.text() == "" or self.lineEdit_10.text() == "" or self.dateEdit.text() == "":
-            dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields","Fill all fields to add an employee!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        elif self.dateEdit.date() > QDate.currentDate():
-            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Date","Invalid date!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-
-        # update the staff table based on the records from the fields
-        id = self.lineEdit_7.text()
-        position = self.lineEdit_4.text()
-        phone = self.lineEdit_5.text()
-        try:
-            phone = int(phone)
-        except ValueError:
-            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Phone number should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        
-        email = self.lineEdit_6.text()
-        address = self.lineEdit.text()
-        emergency_contact = self.lineEdit_10.text()
-        try:
-            emergency_contact = int(emergency_contact)
-        except ValueError:
-            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Emergency contact should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        
-        joining_date = self.dateEdit.date().toString("yyyy-MM-dd")
-        salary = self.lineEdit_2.text()
-        try:
-            salary = int(salary)
-        except ValueError:
-            dlg = QtWidgets.QMessageBox.warning(self,"Input Error","Salary should be a number!",QtWidgets.QMessageBox.StandardButton.Ok)
-            return
-        
-        status = self.lineEdit_11.text()
-        username = self.lineEdit_8.text()
-        password = self.lineEdit_9.text()
-
-        update_query = """
-        UPDATE Staff
-        SET Position = ?, Phone_Number = ?, Email = ?, username = ?, Password = ?, Address = ?, Joining_Date = ?, Salary = ?
-        WHERE id = ?
-        """
-        cursor.execute(update_query, (position, phone, email, username, password, address, joining_date, salary, id))
-        connection.commit()
-        dlg = QtWidgets.QMessageBox.information(self,"Staff updated","Staff record updated successfully!",QtWidgets.QMessageBox.StandardButton.Ok)
-        self.staffscreen.populate_table()
-        self.back()
+        dlg = QtWidgets.QMessageBox.information(self,"Staff updated","Staff successfully updated!",QtWidgets.QMessageBox.StandardButton.Ok)
 
     def back(self):
         self.close()
+
 
 class editItemScreen(QtWidgets.QMainWindow): # DONE #
     def __init__(self, data, menu):
@@ -2656,6 +2331,11 @@ class ProfitLossScreen(QtWidgets.QMainWindow):
 
         net_profit = gross_profit - (gross_profit * (tax/100))
         self.lineEdit_9.setText(str(net_profit))
+
+
+
+
+        
 
     def printTransaction(self):
         dlg = QtWidgets.QMessageBox.information(self,"Transaction print","Transaction successfully printed!",QtWidgets.QMessageBox.StandardButton.Ok)

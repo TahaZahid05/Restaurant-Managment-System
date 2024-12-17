@@ -19,7 +19,7 @@ CREATE TABLE Restaurant (
 
 -- Table: Customer
 CREATE TABLE Customer (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY IDENTITY(1,1),
     Restaurant_id INT FOREIGN KEY REFERENCES Restaurant(id),
     First_name VARCHAR(255) NOT NULL,
     Last_name VARCHAR(255) NOT NULL,
@@ -38,7 +38,8 @@ CREATE TABLE Customer_Address(
 
 -- Table: Reservations
 CREATE TABLE Reservations (
-    id INT NOT NULL IDENTITY(1,1),
+
+    id INT IDENTITY(1,1),
     CustomerID INT NOT NULL,
     Date DATE NOT NULL,
     Time TIME NOT NULL,
@@ -61,8 +62,11 @@ CREATE TABLE Staff (
     Phone_Number VARCHAR(15),
     Position VARCHAR(50),
     Salary INT,
-	lastUpdatedBy INT,
-	FOREIGN KEY (lastUpdatedBy) REFERENCES Staff(id)
+	Joining_Date DATE NOT NULL,
+    Emergency_Contact VARCHAR(15) NOT NULL,
+    Status VARCHAR(50) NOT NULL,
+	ownerID INT,
+	FOREIGN KEY (ownerID) REFERENCES Staff(id)
 );
 
 -- Updated Table: Inventory
@@ -112,7 +116,7 @@ CREATE TABLE Orders (
     id INT PRIMARY KEY IDENTITY(1,1),
     StaffID INT FOREIGN KEY REFERENCES Staff(id),
 	TransactionID INT FOREIGN KEY REFERENCES [Transaction](id),
-    CustomerID INT NOT NULL,
+    CustomerID INT,
 	CustomerAddress VARCHAR(255),
     Table_no INT,
     Special_Request VARCHAR(255),
@@ -124,7 +128,7 @@ CREATE TABLE Orders (
 
 -- Table: Feedback
 CREATE TABLE Feedback (
-    id INT NOT NULL IDENTITY(1,1),
+    id INT IDENTITY(1,1),
     OrderID INT FOREIGN KEY REFERENCES Orders(id),
     Rating FLOAT NOT NULL,
 	PRIMARY KEY (id, OrderID)
@@ -146,15 +150,15 @@ VALUES
 ('Highly Systematic Resturant', 'Habib University, Karachi');
 
 -- Populate Customer table
-INSERT INTO Customer (id, Restaurant_id, First_name, Last_name, Email, username, password, Phone_number)
+INSERT INTO Customer (Restaurant_id, First_name, Last_name, Email, username, password, Phone_number)
 VALUES
-(1, 1, 'John', 'Doe', 'johndoe@gmail.com', 'john_d', 'pass123', '1234567890'),
-(2, 1, 'Jane', 'Smith', 'janesmith@yahoo.com', 'jane_s', 'pass456', '0987654321'),
-(3, 1, 'Mike', 'Brown', 'mikebrown@hotmail.com', 'mike_b', 'pass789', '5678901234'),
-(4, 1, 'Alice', 'White', 'alicewhite@gmail.com', 'alice_w', 'pass101', '2345678901'),
-(5, 1, 'Bob', 'Green', 'bobgreen@outlook.com', 'bob_g', 'pass202', '3456789012'),
-(6, 1, 'Taha', 'Zahid', 'tahazahid1@gmail.com', 'tahazahid', 'tahazahid123', '123-456-7890'),
-(7, 1, 'Abdullah', 'Shaikh', 'abdullahshaikh1@gmail.com', 'abdullahshaikh', 'abdullahshaikh123', '123-456-7890');
+(1, 'John', 'Doe', 'johndoe@gmail.com', 'john_d', 'pass123', '1234567890'),
+(1, 'Jane', 'Smith', 'janesmith@yahoo.com', 'jane_s', 'pass456', '0987654321'),
+(1, 'Mike', 'Brown', 'mikebrown@hotmail.com', 'mike_b', 'pass789', '5678901234'),
+(1, 'Alice', 'White', 'alicewhite@gmail.com', 'alice_w', 'pass101', '2345678901'),
+(1, 'Bob', 'Green', 'bobgreen@outlook.com', 'bob_g', 'pass202', '3456789012'),
+(1, 'Taha', 'Zahid', 'tahazahid1@gmail.com', 'tahazahid', 'tahazahid123', '123-456-7890'),
+(1, 'Abdullah', 'Shaikh', 'abdullahshaikh1@gmail.com', 'abdullahshaikh', 'abdullahshaikh123', '123-456-7890');
 
 INSERT INTO Customer_Address (id, Address)
 VALUES
@@ -176,14 +180,13 @@ VALUES
 (5, '2024-11-14', '19:30:00', 6, 'Confirmed');
 
 -- Populate Staff table
-INSERT INTO Staff (RestaurantID, Full_Name, Last_Name, Email, username, Password, Phone_Number, Position, Salary)
+INSERT INTO Staff (RestaurantID, Full_Name, Last_Name, Email, username, Password, Phone_Number, Position, Salary, Joining_Date, Emergency_Contact, Status,ownerID)
 VALUES
-(1, 'Emma', 'Watson', 'emma.watson@gmail.com', 'emma_w', 'staff123', '1239874560', 'Chef', 50000),
-(1, 'Liam', 'Johnson', 'liam.johnson@yahoo.com', 'liam_j', 'staff456', '4567891230', 'Manager', 60000),
-(1, 'Olivia', 'Davis', 'olivia.davis@hotmail.com', 'olivia_d', 'staff789', '7894561230', 'Waiter', 30000),
-(1, 'Noah', 'Miller', 'noah.miller@gmail.com', 'noah_m', 'staff101', '1236547890', 'Cleaner', 25000),
-(1, 'Ava', 'Wilson', 'ava.wilson@outlook.com', 'ava_w', 'staff202', '7891234560', 'Chef', 55000),
-(1, 'Ayaan', 'Merchant', 'ayaanmerchant1@gmail.com', 'ayaanmerchant', 'ayaanmerchant123', '123-456-7890', 'Waiter', 30000);
+(1, 'Emma', 'Watson', 'emma.watson@gmail.com', 'emma_w', 'staff123', '1239874560', 'Chef', 50000, '2020-01-15', '9998887770', 'Working',5),
+(1, 'Liam', 'Johnson', 'liam.johnson@yahoo.com', 'liam_j', 'staff456', '4567891230', 'Waiter', 30000, '2021-05-20', '8887776660', 'Working',5),
+(1, 'Olivia', 'Davis', 'olivia.davis@hotmail.com', 'olivia_d', 'staff789', '7894561230', 'Waiter', 30000, '2022-03-01', '7776665550', 'On Leave',5),
+(1, 'Noah', 'Miller', 'noah.miller@gmail.com', 'noah_m', 'staff101', '1236547890', 'Cleaner', 25000, '2019-08-12', '6665554440', 'Working',5),
+(1, 'Ayaan', 'Merchant', 'ayaanmerchant1@gmail.com', 'ayaanmerchant', 'ayaanmerchant123', '123-456-7890', 'CEO', 300000, '2015-11-05', '4443332220', 'Working',NULL);
 
 -- Populate Inventory table
 INSERT INTO Inventory (RestaurantID)

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>704</height>
+    <height>723</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -189,7 +189,7 @@
     <property name="geometry">
      <rect>
       <x>350</x>
-      <y>610</y>
+      <y>640</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -202,7 +202,7 @@
     <property name="geometry">
      <rect>
       <x>242</x>
-      <y>610</y>
+      <y>640</y>
       <width>101</width>
       <height>28</height>
      </rect>
@@ -215,7 +215,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>480</y>
+      <y>510</y>
       <width>55</width>
       <height>16</height>
      </rect>
@@ -228,7 +228,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>480</y>
+      <y>510</y>
       <width>291</width>
       <height>71</height>
      </rect>
@@ -238,7 +238,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>560</y>
+      <y>590</y>
       <width>91</width>
       <height>16</height>
      </rect>
@@ -251,7 +251,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>560</y>
+      <y>590</y>
       <width>291</width>
       <height>22</height>
      </rect>
@@ -327,6 +327,29 @@
     </property>
     <property name="text">
      <string>Emergency Phone Number</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="salaryLine_2">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>470</y>
+      <width>291</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="salaryLabel_2">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>470</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Code</string>
     </property>
    </widget>
   </widget>

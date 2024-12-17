@@ -75,6 +75,7 @@ class registerUser(QtWidgets.QMainWindow):
         self.salaryLine.setEnabled(False)
         self.roleBox.setEnabled(False)
         self.phoneLine_2.setEnabled(False)
+        self.salaryLine_2.setEnabled(False)
         self.roleSelect.currentIndexChanged.connect(self.isStaff)
         self.returnLoginButton.clicked.connect(self.closeScreen)
         self.registerButton.clicked.connect(self.registering)
@@ -88,19 +89,23 @@ class registerUser(QtWidgets.QMainWindow):
             self.salaryLine.setEnabled(False)
             self.roleBox.setEnabled(False)
             self.phoneLine_2.setEnabled(False)
+            self.salaryLine_2.setEnabled(False)
         else:
             self.salaryLine.setEnabled(True)
             self.roleBox.setEnabled(True)
             self.roleBox.addItems(["Manager","Chef","Waiter","Host","Sous Chef"])
             self.phoneLine_2.setEnabled(True)
+            self.salaryLine_2.setEnabled(True)
     
     def registering(self):
-        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == "" or self.addressBox.toPlainText() == "" or self.phoneLine.text() == "" or (self.salaryLine.text() == "" and self.phoneLine_2.text() == "" and self.roleSelect.currentText() == "Staff")):
+        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == "" or self.addressBox.toPlainText() == "" or self.phoneLine.text() == "" or (self.salaryLine.text() == "" and self.phoneLine_2.text() == "" and self.salaryLine_2.text() == "" and self.roleSelect.currentText() == "Staff")):
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to register!",QtWidgets.QMessageBox.StandardButton.Ok)
         elif (not(validate_email(self.emailAddress.text()))):
             dlg = QtWidgets.QMessageBox.warning(self,"Invalid Email Address","Email address is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
         elif (self.userPass.text() != self.passConfirm.text()):
             dlg = QtWidgets.QMessageBox.warning(self,"Password Confirmation Failure","Confirm Password doesn't have the same password!",QtWidgets.QMessageBox.StandardButton.Ok)
+        elif (self.roleSelect.currentText() == "Staff" and self.salaryLine_2.text() != "ABCDE"):
+            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Code","Code is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
         else:
             checking_query_customer = "Select Email, username from Customer"
             checking_query_staff = "Select Email, username from Staff"
@@ -131,11 +136,11 @@ class registerUser(QtWidgets.QMainWindow):
                 if(self.roleSelect.currentText() == "Staff"):
                     insert_query = """
                         INSERT INTO Staff
-                        ([RestaurantID],[Full_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary],[Emergency_Contact],Status,[Joining_Date])
-                        VALUES (1,?,?,?,?,?,?,?,?,?,?,?,GETDATE())
+                        ([RestaurantID],[Full_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary],[Emergency_Contact],Status,[ownerID],[Joining_Date])
+                        VALUES (1,?,?,?,?,?,?,?,?,?,?,?,?,GETDATE())
                     """
                     data = (
-                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text(),self.roleBox.currentText(),self.salaryLine.text(),self.phoneLine_2.text(),"Working"
+                        self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text(),self.roleBox.currentText(),self.salaryLine.text(),self.phoneLine_2.text(),"Working",6
                     )
                     cursor.execute(insert_query,data)
                 else:
@@ -909,36 +914,75 @@ class adminScreen(QtWidgets.QMainWindow):
         self.backButton.clicked.connect(self.back)
 
     def billGeneration(self):
-        self.bill_screen = billScreen()
-        self.bill_screen.show()
+        checking_query = "Select Position from Staff where id = ?"
+        print(self.userID)
+        cursor.execute(checking_query,(int(self.userID)))
+        position = cursor.fetchone()[0]
+        if (position == "Chef" or position == "Host" or position == "Sous Chef"):
+            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        else:
+            self.bill_screen = billScreen()
+            self.bill_screen.show()
 
     def viewFeedback(self):
         self.feedback_screen = FeedbackScreen()
         self.feedback_screen.show()
 
     def showInventory(self):
+        checking_query = "Select Position from Staff where id = ?"
+        cursor.execute(checking_query,(self.userID))
+        position = cursor.fetchone()[0]
+        if(position == "Waiter" or position == "Host"):
+            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
         self.inventory_screen = InventoryScreen(self.userID)
         self.inventory_screen.show()
 
     def showMenu(self):
+        checking_query = "Select Position from Staff where id = ?"
+        cursor.execute(checking_query,(self.userID))
+        position = cursor.fetchone()[0]
+        if(position == "Waiter" or position == "Host"):
+            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
         self.menu_screen = MenuScreen()
         self.menu_screen.show()
 
     def showOrder(self):
+        checking_query = "Select Position from Staff where id = ?"
+        cursor.execute(checking_query,(self.userID))
+        position = cursor.fetchone()[0]
+        if (position == "Host"):
+            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
         self.order_screen = OrderScreen(self.userID)
         self.order_screen.show()
 
     def showTransaction(self):
-        self.transaction_screen = TransactionScreen(self.userID)
-        self.transaction_screen.show()
+        checking_query = "Select Position from Staff where id = ?"
+        cursor.execute(checking_query,(self.userID))
+        position = cursor.fetchone()[0]
+        if (position == "CEO"):
+            self.transaction_screen = TransactionScreen(self.userID)
+            self.transaction_screen.show()
+        else:
+            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
+
 
     def showReservations(self):
         self.reservation_screen = ReservationScreen()
         self.reservation_screen.show()
 
     def showStaff(self):
-        self.staff_screen = StaffScreen()
-        self.staff_screen.show()
+        checking_query = "Select Position from Staff where id = ?"
+        cursor.execute(checking_query,(self.userID))
+        poistion = cursor.fetchone()[0]
+        if(poistion == "CEO"):
+            self.staff_screen = StaffScreen()
+            self.staff_screen.show()
+        else:
+            dlg = QtWidgets.QMessageBox.warning(self,"Access Denied","You do not have access to this feature!",QtWidgets.QMessageBox.StandardButton.Ok)
 
     def back(self):
         self.close()

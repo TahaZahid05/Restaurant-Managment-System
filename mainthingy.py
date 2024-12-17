@@ -32,6 +32,8 @@ class UI(QtWidgets.QMainWindow):
         self.guestLoginButton.clicked.connect(self.guestLogin)
         self.exitButton.clicked.connect(self.exitLogin)
 
+        self.userPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+
     def register(self):
         self.register_user = registerUser()
         self.register_user.show()
@@ -233,25 +235,52 @@ class editProfileScreen(QtWidgets.QMainWindow):
         uic.loadUi('ui_files/EditProfile.ui', self)
 
         self.userID = userID
-
+        self.userPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+        self.newPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+        self.confirmPass.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
         self.load_user_details()
 
         self.newAddressButton.clicked.connect(self.newAddress)
         self.applyButton.clicked.connect(self.applyChanges)
         self.deleteAddressButton.clicked.connect(self.deleteAddress)
         self.backButton.clicked.connect(self.back)
+        self.changePassButton.clicked.connect(self.changePassword)
+
+
+    def changePassword(self):
+        verify_password_query = "Select Password from Customer where id = ?"
+        cursor.execute(verify_password_query,(self.userID))
+        if(cursor.fetchone()[0] != self.userPass.text()):
+            dlg = QtWidgets.QMessageBox.warning(self,"Invalid Password","Password is incorrect!",QtWidgets.QMessageBox.StandardButton.Ok)
+            return
+        else:
+            if(self.newPass.text() == "" or self.confirmPass.text() == ""):
+                dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to change password!",QtWidgets.QMessageBox.StandardButton.Ok)
+                return
+            elif(self.newPass.text() != self.confirmPass.text()):
+                dlg = QtWidgets.QMessageBox.warning(self,"Password Confirmation Failure","Confirm Password doesn't have the same password!",QtWidgets.QMessageBox.StandardButton.Ok)
+                return
+            update_query = """
+                UPDATE Customer
+                SET password = ?
+                WHERE id = ?
+            """
+            data = (self.newPass.text(),self.userID)
+            cursor.execute(update_query,data)
+            connection.commit()
+            dlg = QtWidgets.QMessageBox.information(self,"Password Changed","Password was successfully changed!",QtWidgets.QMessageBox.StandardButton.Ok)
 
     def load_user_details(self):
-        autofill_query = "Select First_name, Last_name, Email, username, password, Phone_number from Customer where id = ?"
+        autofill_query = "Select First_name, Last_name, Email, username, Phone_number from Customer where id = ?"
         cursor.execute(autofill_query,(self.userID))
         for row in cursor.fetchall():
             self.firstName.setText(row[0])
             self.lastName.setText(row[1])
             self.emailAddress.setText(row[2])
             self.userName.setText(row[3])
-            self.userPass.setText(row[4])
-            self.passConfirm.setText(row[4])
-            self.phoneNum.setText(row[5])
+            # self.userPass.setText(row[4])
+            # self.passConfirm.setText(row[4])
+            self.phoneNum.setText(row[4])
 
         autofill_address_query = "Select Address from Customer_Address where id = ?"
         cursor.execute(autofill_address_query,(self.userID))
@@ -266,19 +295,29 @@ class editProfileScreen(QtWidgets.QMainWindow):
         self.newAddress_screen.show()
 
     def applyChanges(self):
-        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.userPass.text() == "" or self.passConfirm.text() == "" or self.phoneNum.text() == ""):
+        if (self.firstName.text() == "" or self.lastName.text() == "" or self.emailAddress.text() == "" or self.userName.text() == "" or self.phoneNum.text() == ""):
             dlg = QtWidgets.QMessageBox.warning(self,"Missing Fields Failure","Fill all fields to apply changes!",QtWidgets.QMessageBox.StandardButton.Ok)
         elif (not(validate_email(self.emailAddress.text()))):
             dlg = QtWidgets.QMessageBox.warning(self,"Invalid Email Address","Email address is invalid!",QtWidgets.QMessageBox.StandardButton.Ok)
-        elif (self.userPass.text() != self.passConfirm.text()):
-            dlg = QtWidgets.QMessageBox.warning(self,"Password Confirmation Failure","Confirm Password doesn't have the same password!",QtWidgets.QMessageBox.StandardButton.Ok)
         else:
+            verify_query = "Select Email, username from Customer where id <> ?"
+            cursor.execute(verify_query,(self.userID))
+            for row in cursor.fetchall():
+                if (self.emailAddress.text() == row[0]):
+                    dlg = QtWidgets.QMessageBox.warning(self,"Email Address Already Exists","This email is already used to make an account!",QtWidgets.QMessageBox.StandardButton.Ok)
+                    return
+                elif (self.userName.text() == row[1]):
+                    dlg = QtWidgets.QMessageBox.warning(self,"User Already Exists","The username is already used to make an account!",QtWidgets.QMessageBox.StandardButton.Ok)
+                    return
+            
+
+
             update_query = """
                 UPDATE Customer
-                SET First_name = ?, Last_name = ?, Email = ?, username = ?, Password = ?, Phone_number = ?
+                SET First_name = ?, Last_name = ?, Email = ?, username = ?, Phone_number = ?
                 WHERE id = ?
             """
-            data = (self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.phoneNum.text(),self.userID)
+            data = (self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.phoneNum.text(),self.userID)
             cursor.execute(update_query,data)
             connection.commit()
             dlg = QtWidgets.QMessageBox.information(self,"Changes Applied","Account was successfully updated!",QtWidgets.QMessageBox.StandardButton.Ok)
@@ -370,7 +409,12 @@ class onlineOrder(QtWidgets.QMainWindow):
         if (self.cartTable.selectedItems() == []):
             dlg = QtWidgets.QMessageBox.warning(self,"No Item Selected","Select an item to remove from cart!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
-        self.cartTable.removeRow(selected_item)
+        quantity = int(self.cartTable.item(selected_item, 2).text())
+        if(quantity == 1):
+            self.cartTable.removeRow(selected_item)
+        else:
+            self.cartTable.item(selected_item, 2).setText(str(quantity-1))
+            self.cartTable.item(selected_item, 4).setText(str((quantity-1) * float(self.cartTable.item(selected_item, 3).text())))
 
     def populate_menu_table(self):
         column_names = ["Name","Category","Price"]
@@ -640,8 +684,8 @@ class seatReserve(QtWidgets.QMainWindow):
         if(self.reservationComboBox.currentText() == ""):
             dlg = QtWidgets.QMessageBox.warning(self,"No Reservation Selected","Select a reservation to cancel!",QtWidgets.QMessageBox.StandardButton.Ok)
             return
-        cancel_query = "Delete from Reservations where id = ?"
-        cursor.execute(cancel_query,(self.reservationComboBox.currentText()))
+        update_query = "Update Reservations set Status = 'Cancelled' where id = ?"
+        cursor.execute(update_query,(self.reservationComboBox.currentText()))
         connection.commit()
         self.reservationComboBox.removeItem(self.reservationComboBox.currentIndex())
         dlg = QtWidgets.QMessageBox.information(self,"Reservation Cancelled","Reservation was successfully cancelled!",QtWidgets.QMessageBox.StandardButton.Ok)

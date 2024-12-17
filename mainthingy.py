@@ -60,8 +60,39 @@ class UI(QtWidgets.QMainWindow):
             dlg = QtWidgets.QMessageBox.warning(self,"Login Failure","No account with the following email address and password exist!",QtWidgets.QMessageBox.StandardButton.Ok)
 
     def guestLogin(self):
-        self.guest_user_screen = GuestScreen()
-        self.guest_user_screen.show()
+        try:
+            # Connect to the database
+            conn = pyodbc.connect(connection_string)
+            cursor = conn.cursor()
+            # Step 1: Insert a new entry into the Customer table with 'Guest' as the name
+            cursor.execute("""
+                INSERT INTO Customer ([Restaurant_id],[First_Name])
+                OUTPUT INSERTED.ID
+                VALUES (1,'Guest')
+            """)
+            # Retrieve the generated CustomerID
+            new_customer_id = cursor.fetchone()[0]
+            conn.commit()
+            QtWidgets.QMessageBox.information(
+                self,
+                "Guest Login",
+                f"Guest login successful. Please note, You will not be able to login with the same guest id again. Customer ID: {new_customer_id}"
+            )
+            # Step 2: Show the GuestScreen
+            self.guest_user_screen = GuestScreen(new_customer_id)  # Pass new ID to the guest screen
+            self.guest_user_screen.show()
+            
+        except pyodbc.Error as e:
+            # Handle any database errors
+            QtWidgets.QMessageBox.critical(
+                self,
+                "Database Error",
+                f"An error occurred while creating the guest entry: {e}"
+            )
+        finally:
+            # Always close the database connection
+            if conn:
+                conn.close()
 
     def exitLogin(self):
         self.close()
@@ -336,8 +367,10 @@ class editProfileScreen(QtWidgets.QMainWindow):
         self.close()
 
 class GuestScreen(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, userID):
         super(GuestScreen, self).__init__()
+
+        self.userID = userID
 
         uic.loadUi('ui_files/GuestScreen.ui', self)
 
@@ -345,11 +378,11 @@ class GuestScreen(QtWidgets.QMainWindow):
         self.trackOrderButton.clicked.connect(self.trackOrder)
 
     def onlineOrderScreen(self):
-        self.online_order_screen = onlineOrder()
+        self.online_order_screen = onlineOrder(self.userID)
         self.online_order_screen.show()
 
     def trackOrder(self):
-        self.trackorder_screen = trackOrderScreen()
+        self.trackorder_screen = trackOrderScreen(self.userID)
         self.trackorder_screen.show()
 
 

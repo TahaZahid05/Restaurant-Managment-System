@@ -22,10 +22,10 @@ CREATE TABLE Customer (
     id INT PRIMARY KEY IDENTITY(1,1),
     Restaurant_id INT FOREIGN KEY REFERENCES Restaurant(id),
     First_name VARCHAR(255) NOT NULL,
-    Last_name VARCHAR(255) NOT NULL,
-    Email VARCHAR(255) UNIQUE NOT NULL,
-    username VARCHAR(255) UNIQUE NOT NULL,
-    [password] VARCHAR(255) NOT NULL,
+    Last_name VARCHAR(255),
+    Email VARCHAR(255),
+    username VARCHAR(255) ,
+    [password] VARCHAR(255),
     Phone_number VARCHAR(15)
 );
 

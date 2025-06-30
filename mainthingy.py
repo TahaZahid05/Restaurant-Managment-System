@@ -8,8 +8,8 @@ from PyQt6.QtGui import QIntValidator
 import pyodbc
 import math
 
-server = 'TAHA\\SQLSERVER1'
-database = 'Project2'  # Name of your Northwind database
+server = 'LAPTOP-LLE4EO2V\SERVER2'
+database = 'RMS'  # Name of project database
 connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
 
 # Establish a connection to the database
@@ -167,17 +167,6 @@ class registerUser(QtWidgets.QMainWindow):
                     break
             if (checkFlag):
                 if(self.roleSelect.currentText() == "Staff"):
-                    # insert_query = """
-                    #     INSERT INTO Staff
-                    #     ([RestaurantID],[Full_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary],[Emergency_Contact],Status,[ownerID],[Joining_Date])
-                    #     VALUES (1,?,?,?,?,?,?,?,?,?,?,?,?,GETDATE())
-                    # """
-                    # data = (
-                    #     self.firstName.text(),self.lastName.text(),self.emailAddress.text(),self.userName.text(),self.userPass.text(),self.addressBox.toPlainText(),self.phoneLine.text(),self.roleBox.currentText(),self.salaryLine.text(),self.phoneLine_2.text(),"Working",6
-                    # )
-                    # print("yes")
-                    # cursor.execute(insert_query,data)
-                    # print("no")
                     insert_query = """
                         INSERT INTO Staff
                         ([RestaurantID],[Full_Name],[Last_Name],[Email],[username],[Password],[Address],[Phone_Number],[Position],[Salary],[Emergency_Contact],Status,[ownerID],[Joining_Date])
@@ -587,7 +576,6 @@ class checkOutScreen(QtWidgets.QMainWindow):
         self.close()
 
     def autofill_information(self):
-        print("yes")
         autofill_query = "Select concat(First_name, ' ', Last_name), Email, Phone_number from Customer where id = ?"
         cursor.execute(autofill_query,(self.userID))
         for row in cursor.fetchall():
@@ -616,8 +604,6 @@ class checkOutScreen(QtWidgets.QMainWindow):
             self.lineEdit_3.setText(str((self.totalAmountInt+500) * 0.15))
         else:
             self.lineEdit_3.setText(str((self.totalAmountInt+500) * 0.12))
-
-        print("yes")
         self.lineEdit_4.setText(str(self.totalAmountInt + 500 + float(self.lineEdit_3.text())))
         
         
@@ -663,7 +649,6 @@ class checkOutScreen(QtWidgets.QMainWindow):
             tax = 12
         data = (date,time,"Order",self.paymentType,amountWithoutTax,tax)
         cursor.execute(insert_transaction_query,data)
-        print("yes")
 
         insert_order_query = """
             INSERT INTO Orders([TransactionID],[CustomerID],[CustomerAddress],[Special_Request],[Date],[Time],[Status])
@@ -688,9 +673,7 @@ class checkOutScreen(QtWidgets.QMainWindow):
             itemID = cursor.fetchone()[0]
             data = (orderID,itemID,int(self.checkOutItemTable.item(row, 2).text()))
             cursor.execute(insert_order_menu_query,data)
-        print("yes")
         connection.commit()
-        print("yes")
 
         dlg = QtWidgets.QMessageBox.information(self,"Order Confirmed","Order was successfully placed!",QtWidgets.QMessageBox.StandardButton.Ok)
         
@@ -929,7 +912,6 @@ class viewDetailScreen(QtWidgets.QMainWindow):
             self.addressLine.setText(row[0])
         get_items_quantity_price_query = "Select Name, Price, Quantity from MenuItem Inner Join Order_Menu ON MenuItem.ID = Order_Menu.Item_ID where Order_ID = ?;"
         cursor.execute(get_items_quantity_price_query,(self.orderID))
-        print("yes")
         for row_index, row_data in enumerate(cursor.fetchall()):
             self.itemTable.insertRow(row_index)
             for col_index, cell_data in enumerate(row_data):
@@ -1257,7 +1239,6 @@ class generateBillScreen(QtWidgets.QMainWindow): # DONE #
 
 class FeedbackScreen(QtWidgets.QMainWindow): # DONE #
     def __init__(self):
-        print("yes")
         super(FeedbackScreen, self).__init__()
 
         uic.loadUi('ui_files/CustomerFeedBackView.ui', self)
@@ -1269,7 +1250,6 @@ class FeedbackScreen(QtWidgets.QMainWindow): # DONE #
             JOIN Staff s ON o.StaffID = s.id;
         """
         cursor.execute(populate_query)
-        print("yes")
         data = cursor.fetchall()
         self.tableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.tableWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
